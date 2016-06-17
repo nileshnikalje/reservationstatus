@@ -93,7 +93,7 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
 	this.source = $location.search().source;
 	
 	
-	var data_all, dashBoardPageSize = 14, dashBoardPageTime = 5000, pageCount = 0, timeOutHandler, pageCounter = 0;
+	var data_all, dashBoardPageSize = 19, dashBoardPageTime = 5000, pageCount = 0, timeOutHandler, pageCounter = 0;
 	
 	var wsUrl = "/reservationstatus/rest/getTrainInfo/" + this.source;
 	console.log("will be hitting url:" + wsUrl);
@@ -137,6 +137,7 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
     	if (pageCounter  < pageCount) {
     		//clearTimeout(timeOutHandler);
     		$scope.tableData = data_all.slice(pageCounter*dashBoardPageSize,pageCounter*dashBoardPageSize+dashBoardPageSize);
+    		console.log("Data: "+ $scope.tableData);
     		pageCounter ++;
     		$scope.pgCounter = pageCounter;
     		//timeOutHandler = setTimeout(processResponse,15000);

@@ -10,13 +10,13 @@ import java.util.Properties;
 
 public class PropertiesUtils {
 
-	static Properties prop;
+	private static Properties prop;
 
 	static {
 		prop = new Properties();
 
 		try {
-			InputStream input = new FileInputStream("D:\\config.properties");
+			InputStream input = new FileInputStream("config.properties");
 			prop.load(input);
 
 		} catch (FileNotFoundException e) {
@@ -28,11 +28,11 @@ public class PropertiesUtils {
 		}
 	}
 
-	public static void saveProperties(Properties prop) {
+	private static void saveProperties(Properties prop) {
 		OutputStream output = null;
 
 		try {
-			output = new FileOutputStream("D:\\config.properties");
+			output = new FileOutputStream("config.properties");
 			prop.store(output, null);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

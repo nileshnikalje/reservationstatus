@@ -1,5 +1,5 @@
-"use strict";
-angular.module("yapp", [ "ui.router", "ngAnimate" ]).config(
+
+angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
 		[
 				"$stateProvider",
 				"$urlRouterProvider",
@@ -19,20 +19,52 @@ angular.module("yapp", [ "ui.router", "ngAnimate" ]).config(
 						parent : "base",
 						templateUrl : "views/dashboard.html",
 						controller : "DashboardCtrl"
-					}).state("overview", {
+					}).state("configure", {
 						url : "/configure",
 						parent : "dashboard",
 						templateUrl : "views/dashboard/configure-new.html"
-					}).state("reports", {
-						url : "/reports",
+					}).state("addScreens", {
+						url : "/addscreens",
 						parent : "dashboard",
-						templateUrl : "views/dashboard/reports.html"
+						templateUrl : "views/dashboard/addscreens.html"
 					})
 				} ]), angular.module("yapp").controller("LoginCtrl",
-		[ "$scope", "$location", function(r, t) {
+		[ "$scope", "$location", "$http", function(r, s, t) {
+			console.log("here : " + r.userName);
+	
 			r.submit = function() {
-				return t.path("/dashboard"), !1
+				
+				if (r.userName == undefined || r.passwd == undefined) {
+					alert ("Please enter username and password to login.");
+					return;
+				}
+				
+				console.log("[" +r.userName.trim()+ "]");
+				
+				if (r.userName.trim() == "" || r.passwd.trim() == "" ) {
+					alert ("User name or password cannot contain spaces");
+					return;
+				}
+				
+				var request = t({
+					method :"post",
+					url : "/reservationstatus/rest/validateUser/" + r.userName + "/" + r.passwd
+				});
+				
+				request.success(function(response) { 
+					console.log(response.code);
+					
+					if (response.code == 502) {
+						alert ("User Validation Failed. Either the username or the password doesnt match our records");
+						return;
+					}
+					
+					return s.path("/dashboard"), !1
+				});
+				
 			}
+				
+			
 		} ]), angular.module("yapp").controller("DashboardCtrl",
 		[ "$scope", "$state", function(r, t) {
 			r.$state = t
@@ -199,4 +231,67 @@ angular.module("yapp", [ "ui.router", "ngAnimate" ]).config(
                 }
             }
 
-        } );
+        } ),angular.module("yapp")
+        .controller("ScreenAddController", function($scope, $http) {
+        	$scope.hideAddForm=true;
+        	
+        	$scope.showAddConfiguration = function () {
+        		$scope.hideAddForm=false;
+        	}
+        	
+        	$scope.addPlatforms = function () {
+        		
+        		if($scope.platformNumber == undefined || $scope.platformNumber == '0' 
+        			|| $scope.screenNumber == undefined || $scope.screenNumber == '0') {
+        			alert("Platform Number or Screen Number is required and should not be zero");
+        			
+        			return;
+        		}
+
+    			if ($scope.screenNumber == undefined) {
+    				$scope.screenNumber = "";
+    			}
+        		
+//            	var wsAddDataUrl = "/reservationstatus/rest/addScreen/" 
+//					+ $scope.platformNumber 
+//					+ "/" + $scope.screenNumber +"/" + $scope.screenIdentifier;
+//            	
+//				console.log("url:" + wsAddDataUrl);
+//			    $http.post(wsAddDataUrl)
+//			    .then(function(response) {
+//			    	
+//					alert("Data added successfully");
+//					$scope.getConfigInfo();
+//			    });	 
+			    
+			    $http({
+			    	method 	: "POST",
+			    	url		: "/reservationstatus/rest/addScreens",
+			    	data    : { platformNumber : $scope.platformNumber , screenIdentifier  : $scope.screenIdentifier ,	screenNumber   : $scope.screenNumber }
+			    }).then (function successCallBack(response){
+					alert("Data added successfully");
+					$scope.getConfigInfo();
+			    },
+			    		 function errorCallBack(response){});
+        	};
+        	
+        	$scope.getConfigInfo = function() {
+            	var wsUrl = "/reservationstatus/rest/getPlatforms" ;
+            	console.log("url:" + wsUrl);
+
+//            	blockUI.start();
+                $http.get(wsUrl,{timeout: 15000})
+                .then(function(response) {
+                	console.log(response);
+                	$scope.platformData = response.data;
+
+                });         		
+        	};
+        	
+        	$scope.getConfigInfo();
+        	
+        	$scope.removeScreen = function(r,t) {
+        		console ("inside remove + " + r + ":" + t);
+        	}
+        	
+        });
