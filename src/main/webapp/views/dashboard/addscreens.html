@@ -1,0 +1,60 @@
+<div ng-controller="ScreenAddController" >
+<h1> Welcome to Bhopal Railway Station</h1>
+   <form>
+
+    <div ng-model="currentInfo"  ng-hide="hideConfigurationInfo">
+        <h2>Currently configured platforms and screens </h2>
+		<table class="maintable">
+			<tr >
+				<td>Platform No</td>
+				<td>Number of screens</td>
+				<td>Screen Identifier</td>
+
+			</tr>
+			<tr ng-repeat = "config in platformData">
+				<td>{{config.platformNumber}}</td>
+				<td>{{config.screenNumber}}</td>
+				<td>{{config.screenIdentifier}}</td>
+
+			</tr>	
+		</table>         
+    
+    
+    <br>
+    <div align="center"><button ng-click="showAddConfiguration()" >Add platforms</button>   </div>
+    
+    <div ng-hide="hideAddForm">    
+    
+    
+    <h2 >Use the form below to add platforms</h2>
+    <form>
+	    <table class="formtable">
+	    	<tr>
+				<td>Platform Number</td>
+	    	   	<td><input type="text"  ng-model="platformNumber" >{{platformNumberMsg}}</td>
+	    	  </tr>
+	          <tr>
+	          	<td>Screen Number</td>
+	          	<td><input type="text"  ng-model="screenNumber" >{{screenNumberMsg}}</td>
+			  </tr>
+	          <tr>
+	          	<td>Screen Identifier</td>
+	          	<td><input type="text"  ng-model="screenIdentifier" >{{screenNumberMsg}}</td>
+			  </tr>
+	    	  <tr>
+	    	  	<td><button ng-click="addPlatforms()" ng-disabled="disableSubmit">Submit</button></td>
+	    	  	<td> </td>
+	    	  </tr>    	  
+	    </table>
+	    
+	    </form>
+    </div>
+    
+    </div>
+    </form>
+</div>
+
+
+
+</body>
+</html>
