@@ -1,6 +1,5 @@
 package com.balle.dao;
 
-import java.math.BigInteger;
 
 public class ReservationInfo {
 	String name;

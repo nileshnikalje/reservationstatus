@@ -1,13 +1,13 @@
 package com.balle.services;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -20,12 +20,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.balle.dao.ReservationInfo;
+import com.balle.dao.ScreenDetails;
+import com.balle.dao.ScreenDetailsComparator;
 import com.balle.dao.TrainInfo;
-import com.balle.dao.TrainInfoDataObject;
+import com.balle.dao.UserDetails;
 import com.balle.utils.ConfigData;
 import com.balle.utils.ConfigUtils;
-import com.balle.dao.ScreenDetails;
-import com.balle.dao.UserDetails;
 import com.google.gson.GsonBuilder;
 
 @Path("/")
@@ -151,9 +151,18 @@ public class RestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/removePlatformConf/{source}")
-	public void removePlatformConfData(@PathParam("source") String source) {
-		HashMap<String, TrainInfo> data = TrainInfoDataObject.getObject();
-		data.remove(source);
+	public void removePlatformConfigurationData(@PathParam("source") String source) throws IOException {
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData configData = configUtils.getConfigData();
+		
+		HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
+		
+		if (trainInfoData != null && trainInfoData.containsKey(source)) {
+			trainInfoData.remove(source);
+			configData.trainInfoData = trainInfoData;
+			configUtils.writeConfigData(configData);
+		}
+		
 	}
 
 	@GET
@@ -257,6 +266,7 @@ public class RestService {
 	public String getPlatforms() throws IOException {
 
 		ConfigData cd = new ConfigUtils().getConfigData();
+		Collections.sort(cd.screens, new ScreenDetailsComparator());
 		System.out.println("output:" + new GsonBuilder().create().toJson(cd.screens));
 		return new GsonBuilder().create().toJson(cd.screens);
 

@@ -1,7 +1,6 @@
 package com.balle.services;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -14,11 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import com.balle.dao.Albums;
-import com.balle.dao.TrainInfoResponse;
 import com.balle.utils.HMACGenerator;
 import com.balle.utils.ReservationConstants;
-import com.google.gson.Gson;
 
 public class RailwayServices {
 	
