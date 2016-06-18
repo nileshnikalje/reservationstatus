@@ -22,7 +22,7 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
 					}).state("configure", {
 						url : "/configure",
 						parent : "dashboard",
-						templateUrl : "views/dashboard/configure-new.html"
+						templateUrl : "views/dashboard/configure.html"
 					}).state("addScreens", {
 						url : "/addscreens",
 						parent : "dashboard",
@@ -73,13 +73,32 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
         	$scope.hideTrainInfo = true;
         	$scope.hideAddForm=true;
         	
-            $scope.platforms = [
-                                {name :"Platform 1 - Screen 1", value : "platform01screen01" },
-                                {name :"Platform 1 - Screen 2", value : "platform01screen02" },
-                                {name :"Platform 2 - Screen 1", value : "platform01screen01" },
-                                {name :"Platform 2 - Screen 2", value : "platform02screen02" }
-                                ];
+        	console.log("Inside controller url" );
+        	
+
+        	
+//             $scope.platforms = [
+//                                 {name :"Platform 1 - Screen 1", value : "platform01screen01" },
+//                                 {name :"Platform 1 - Screen 2", value : "platform01screen02" },
+//                                 {name :"Platform 2 - Screen 1", value : "platform01screen01" },
+//                                 {name :"Platform 2 - Screen 2", value : "platform02screen02" }
+//                                 ];
             
+        	$scope.getPlatformInfo = function() {
+            	var wsUrl = "/reservationstatus/rest/getPlatforms" ;
+            	console.log("url:" + wsUrl);
+
+//            	blockUI.start();
+                $http.get(wsUrl,{timeout: 15000})
+                .then(function(response) {
+                	console.log(response);
+                	$scope.platforms = response.data;
+
+                });         		
+        	};
+            
+        	$scope.getPlatformInfo();
+        	
             $scope.selectPlatform = function() {
             	$scope.getTrainInfo();
             	$scope.hideAddForm=true;
@@ -87,7 +106,7 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
             
             
             $scope.getTrainInfo = function() {
-            	var wsUrl = "/reservationstatus/rest/getTrainInfo/" + $scope.selectedPlatform.value;
+            	var wsUrl = "/reservationstatus/rest/getTrainInfo/" + $scope.selectedPlatform.screenIdentifier;
             	console.log("url:" + wsUrl);
                 $http.get(wsUrl)
                 .then(function(response) {
@@ -111,7 +130,7 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
             $scope.removeTrainConf = function() {
             	
             	var wsAddDataUrl = "/reservationstatus/rest/removePlatformConf/" 
-					+ $scope.selectedPlatform.value ;
+					+ $scope.selectedPlatform.screenIdentifier ;
 
 		    	console.log("url:" + wsAddDataUrl);
 		        $http.post(wsAddDataUrl)
@@ -162,7 +181,7 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
             	var dateOfJourney = zeroPadNumber(jsDate.getDate()) + "-" + zeroPadNumber((jsDate.getMonth() + 1)) + "-" +  jsDate.getFullYear();
             	console.log("Date is " + dateOfJourney);
             	var wsAddDataUrl = "/reservationstatus/rest/configurePlatform/" 
-            					+ $scope.selectedPlatform.value 
+            					+ $scope.selectedPlatform.screenIdentifier 
             					+ "/" + $scope.trainNumber
             					+ "/" + $scope.trainName
             					+ "/" + $scope.journeyClass
@@ -186,11 +205,11 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
                 	var wsUrl = "/reservationstatus/rest/getTrainInfoByNumber/" +  $scope.trainNumber;
                 	console.log("url:" + wsUrl);
                 	$scope.trainNameMsg = "Loading train information .....";
-//                	blockUI.start();
+                	//blockUI.start();
                     $http.get(wsUrl,{timeout: 15000})
                     .then(function(response) {
 	                	$scope.trainNameMsg = "";
-//	                	blockUI.stop();	                    	
+	                	//blockUI.stop();	                    	
                     	$scope.trainInfoByNumber = response.data; 
                     	console.log($scope.trainInfoByNumber.trains[0].full_name)
                 		$scope.trainName = $scope.trainInfoByNumber.trains[0].full_name;
@@ -252,28 +271,19 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
     				$scope.screenNumber = "";
     			}
         		
-//            	var wsAddDataUrl = "/reservationstatus/rest/addScreen/" 
-//					+ $scope.platformNumber 
-//					+ "/" + $scope.screenNumber +"/" + $scope.screenIdentifier;
-//            	
-//				console.log("url:" + wsAddDataUrl);
-//			    $http.post(wsAddDataUrl)
-//			    .then(function(response) {
-//			    	
-//					alert("Data added successfully");
-//					$scope.getConfigInfo();
-//			    });	 
-			    
-			    $http({
-			    	method 	: "POST",
-			    	url		: "/reservationstatus/rest/addScreens",
-			    	data    : { platformNumber : $scope.platformNumber , screenIdentifier  : $scope.screenIdentifier ,	screenNumber   : $scope.screenNumber }
-			    }).then (function successCallBack(response){
+            	var wsAddDataUrl = "/reservationstatus/rest/addScreen/" 
+					+ $scope.platformNumber 
+					+ "/" + $scope.screenNumber ;
+            	
+				console.log("url:" + wsAddDataUrl);
+			    $http.post(wsAddDataUrl)
+			    .then(function(response) {
+			    	
 					alert("Data added successfully");
 					$scope.getConfigInfo();
-			    },
-			    		 function errorCallBack(response){});
-        	};
+			    });	 
+			    
+        	}
         	
         	$scope.getConfigInfo = function() {
             	var wsUrl = "/reservationstatus/rest/getPlatforms" ;
@@ -292,6 +302,6 @@ angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
         	
         	$scope.removeScreen = function(r,t) {
         		console ("inside remove + " + r + ":" + t);
-        	}
+        	};
         	
         });

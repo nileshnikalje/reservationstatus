@@ -7,6 +7,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.balle.dao.ScreenDetails;
+import com.balle.dao.TrainInfo;
+import com.balle.dao.UserDetails;
+
 
 public class ConfigUtils {
 
@@ -30,7 +36,7 @@ public class ConfigUtils {
 		File file = new File(ReservationConstants.CONFIG_FILE_PATH_NAME);
 
 		if (!file.exists()) {
-
+			System.out.println("File not exists. Writing default Data");
 			file.createNewFile();
 
 				data = new ConfigData();
@@ -76,6 +82,8 @@ public class ConfigUtils {
 		ArrayList<UserDetails> users = new ArrayList<>();
 		users.add(new UserDetails("admin", "password"));
 		data.users = users;
+		data.screens = new ArrayList<ScreenDetails>();
+		data.trainInfoData = new HashMap<String,TrainInfo>();
 		writeConfigData(data);
 		return data;
 	}

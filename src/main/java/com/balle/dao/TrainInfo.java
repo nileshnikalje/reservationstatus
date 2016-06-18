@@ -1,9 +1,13 @@
 package com.balle.dao;
 
-import java.time.LocalDate;
+import java.io.Serializable;
 
-public class TrainInfo {
+public class TrainInfo implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8340378876497826325L;
 	String 	    trainNumber;
 	String		trainName;
 	String		journeyClass;

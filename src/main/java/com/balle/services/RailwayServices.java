@@ -80,6 +80,7 @@ public class RailwayServices {
 			}
 		}
 
+		System.out.println(trainInfoResponse);
 		return trainInfoResponse;
 
 	}
