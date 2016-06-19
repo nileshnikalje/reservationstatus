@@ -19,7 +19,7 @@ table.maintable td  {
 }
 
 table.maintable th  {
-
+  font-weight: bold;
   border: 1px solid grey;
   border-collapse: collapse;
   padding: 5px;
@@ -67,7 +67,7 @@ table.formtable th  {
 </head>
 <body ng-app="yapp">
 
-<div ng-controller="DataAddController" >
+<div ng-controller="PlatformConfigController" >
 <h1> Welcome to Bhopal Railway Station</h1>
    <form>
          <b>Select New platform   : </b> 
@@ -91,10 +91,9 @@ table.formtable th  {
 			<tr>
 				<td>{{trainInfo.trainNumber}}</td>
 				<td>{{trainInfo.trainName}}</td>
-				<td>{{trainInfo.journeyClass}}</td>
-				<td>{{trainInfo.date}}</td>
 				<td>{{trainInfo.stationName}}</td>
-		
+				<td>{{trainInfo.date}}</td>
+				<td>{{trainInfo.journeyClass}}</td>
 			</tr>	
 		</table>         
     
@@ -126,7 +125,7 @@ table.formtable th  {
 	    	  </tr>
 	    	  <tr>
 	    	  	<td>Date</td>
-	    	  	<td><input type="date" ng-model="journeyDate"> {{DateMsg}}</td>
+	    	  	<td><input type="date" ng-model="journeyDate"> {{dateMsg}}</td>
 	    	  </tr>
 	    	  <tr>
 	    	  	<td><button ng-click="updateTrainInfo()" ng-disabled="disableSubmit">Submit</button></td>

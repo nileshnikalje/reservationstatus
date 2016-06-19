@@ -3,6 +3,11 @@ package com.balle.dao;
 import java.io.Serializable;
 
 public class UserDetails implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5650869737867583638L;
+
 	public UserDetails(String userName, String password) {
 		super();
 		this.userName = userName;

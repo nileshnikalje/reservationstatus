@@ -6,9 +6,11 @@
         <h2>Currently configured platforms and screens </h2>
 		<table class="maintable">
 			<tr >
-				<td>Platform No</td>
-				<td>Screen No</td>
-				<td>Screen Identifier</td>
+				<b>
+					<td><b>Platform No</b></td>
+					<td><b>Screen No</b></td>
+					<td><b>Screen Identifier</b></td>
+				</b>
 
 			</tr>
 			<tr ng-repeat = "config in platformData">
@@ -31,11 +33,11 @@
 	    <table class="formtable">
 	    	<tr>
 				<td>Platform Number</td>
-	    	   	<td><input type="text"  ng-model="platformNumber" >{{platformNumberMsg}}</td>
+	    	   	<td><input type="number"  ng-model="platformNumber" >{{platformNumberMsg}}</td>
 	    	  </tr>
 	          <tr>
 	          	<td>Screen Number</td>
-	          	<td><input type="text"  ng-model="screenNumber" >{{screenNumberMsg}}</td>
+	          	<td><input type="number"  ng-model="screenNumber" >{{screenNumberMsg}}</td>
 			  </tr>
 	    	  <tr>
 	    	  	<td><button ng-click="addPlatforms()" ng-disabled="disableSubmit">Submit</button></td>

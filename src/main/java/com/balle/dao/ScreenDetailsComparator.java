@@ -8,12 +8,26 @@ public class ScreenDetailsComparator implements Comparator<ScreenDetails> {
 	public int compare(ScreenDetails o1, ScreenDetails o2) {
 		// TODO Auto-generated method stub
 		
-		if (o1.getPlatformNumber().compareTo(o2.getPlatformNumber()) == 0 )
-			return (o1.getScreenNumber().compareTo(o2.getScreenNumber()));
-		else
-			return o1.getPlatformNumber().compareTo(o2.getPlatformNumber());
+		int platformNumber1 = Integer.parseInt(o1.getPlatformNumber());
+		int platformNumber2 = Integer.parseInt(o2.getPlatformNumber());
 		
-
+		if ( platformNumber1 == platformNumber2 ) {
+			int screenNumber1 = Integer.parseInt(o1.getScreenNumber());
+			int screenNumber2 = Integer.parseInt(o2.getScreenNumber());
+			
+			if(screenNumber1 == screenNumber2) {
+				return 0;
+			}
+			else {
+				return screenNumber1 - screenNumber2;
+			}
+		}
+		else {
+			return platformNumber1 - platformNumber2;
+		}
+				
 	}
 
+	
+	
 }
