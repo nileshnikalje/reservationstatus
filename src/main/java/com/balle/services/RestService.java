@@ -1,4 +1,4 @@
-package com.balle.services; -- modified for git -- for 3 way merge
+package com.balle.services; // modified for git -- for 3 way merge -- now for ending
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
