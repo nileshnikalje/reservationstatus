@@ -1,9 +1,9 @@
-<div ng-controller="ScreenAddController" >
-<h1> Welcome to Bhopal Railway Station</h1>
+<div class="other-page" ng-controller="ScreenAddController" >
+<h1 style="color:white"> Reservation Charting System - Add/Remove Screens</h1>
    <form>
 
     <div ng-model="currentInfo"  ng-hide="hideConfigurationInfo">
-        <h2>Currently configured platforms and screens </h2>
+        <h2 style="color:white">Current Screen Configurations </h2>
 		<table class="maintable">
 			<tr >
 				<b>
@@ -23,24 +23,24 @@
     
     
     <br>
-    <div align="center"><button ng-click="showAddConfiguration()" >Add platforms</button>   </div>
+    <div align="center" style="font-weight: bold"><button ng-click="showAddConfiguration()" ><b>Add Screens</b></button>   </div>
     
     <div ng-hide="hideAddForm">    
     
     
-    <h2 >Use the form below to add platforms</h2>
+    <h2 style="color:white">Use the form below to add screens</h2>
     <form>
 	    <table class="formtable">
 	    	<tr>
-				<td>Platform Number</td>
+				<td style="color:white"><b>Platform Number</b></td>
 	    	   	<td><input type="number"  ng-model="platformNumber" >{{platformNumberMsg}}</td>
 	    	  </tr>
 	          <tr>
-	          	<td>Screen Number</td>
+	          	<td style="color:white"><b>Screen Number</b></td>
 	          	<td><input type="number"  ng-model="screenNumber" >{{screenNumberMsg}}</td>
 			  </tr>
 	    	  <tr>
-	    	  	<td><button ng-click="addPlatforms()" ng-disabled="disableSubmit">Submit</button></td>
+	    	  	<td><button ng-click="addPlatforms()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
 	    	  	<td> </td>
 	    	  </tr>    	  
 	    </table>

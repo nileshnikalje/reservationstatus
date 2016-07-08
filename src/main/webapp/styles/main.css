@@ -7024,6 +7024,18 @@ button.close {
 	padding: 3em
 }
 
+.other-page {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: auto;
+	background: #3ca2e0;
+	padding: 3em
+}
+
+
 .login-page h1 {
 	font-weight: 300
 }

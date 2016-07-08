@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -32,6 +33,8 @@ import com.google.gson.GsonBuilder;
 @Path("/")
 public class RestService {
 
+	
+	Map<String,String> loggedInUsers = new HashMap<>();
 	@GET
 	@Path("/getTrainInfo/{source}")
 	public String getTrainInfo(@PathParam("source") String source) throws IOException {
@@ -176,7 +179,7 @@ public class RestService {
 			returnString = RailwayServices.getTrainInfoByNumber(trainNumber);
 		else
 			returnString = RailwayServices.getTrainInfoByNumber("12004");
-		System.out.println(returnString);
+
 		return returnString;
 	}
 
@@ -187,7 +190,6 @@ public class RestService {
 	public String validatePassword(@PathParam("userName") String userName,
 			@PathParam("password") String password) throws IOException {
 
-		System.out.println("Inside rs");
 
 		ConfigData cd = new ConfigUtils().getConfigData();
 		boolean isUserValid = false;
@@ -200,13 +202,14 @@ public class RestService {
 			if (ud.getUserName().equals(userName)
 					&& ud.getPassword().equals(password)) {
 				isUserValid = true;
+				loggedInUsers.put(userName, userName);
 			}
 		}
 
-		if (isUserValid && userName.equals("admin")
-				&& password.equals("password")) {
-			return ("{\"code\" : \"501\"}");
-		}
+//		if (isUserValid && userName.equals("admin")
+//				&& password.equals("password")) {
+//			return ("{\"code\" : \"501\"}");
+//		}
 
 		if (!isUserValid) {
 			return ("{\"code\" : \"502\"}");
@@ -216,6 +219,64 @@ public class RestService {
 
 	}
 
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/changePassword/{userName}/{currentPassword}/{newPassword}")
+	public String changePassword(@PathParam("userName") String userName,
+								 @PathParam("currentPassword") String currentPassword,
+								 @PathParam("newPassword") String newPassword) throws IOException {
+
+
+
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		boolean isUserValid = false;
+
+		Iterator<UserDetails> i = cd.users.iterator();
+		while (i.hasNext()) {
+
+			UserDetails ud = i.next();
+
+			if ( ud.getUserName().equals(userName) && ud.getPassword().equals(currentPassword)) {
+				isUserValid = true;
+				ud.setPassword(newPassword);
+				configUtils.writeConfigData(cd);
+				return ("{\"code\" : \"500\"}");
+			}
+		}
+
+
+
+		return ("{\"code\" : \"502\"}");
+
+		
+	}
+	
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/logoutuser/{userName}")
+	public void logout(@PathParam("userName") String userName) throws IOException {
+		System.out.println("Came for logging out : " + userName);
+		loggedInUsers.remove(userName);
+	}	
+	
+	
+	
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/isUserActive/{userName}")
+	public String isUserActive(@PathParam("userName") String userName) {
+		if (loggedInUsers.containsKey(userName))
+			return "Y";
+		else
+			return "N";
+	}
+	
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)

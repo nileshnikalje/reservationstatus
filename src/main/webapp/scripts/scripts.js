@@ -1,4 +1,4 @@
-		angular.module("yapp", [ "ui.router", "ngAnimate" ]).config(
+		angular.module("yapp", [ "ui.router", "ngAnimate"]).config(
 				[
 						"$stateProvider",
 						"$urlRouterProvider",
@@ -19,6 +19,14 @@
 								parent : "base",
 								templateUrl : "views/login.html",
 								controller : "LoginCtrl"
+							}).state("logout", {
+								url : "/logout",
+								data : {
+									requireLogin : false
+								},
+								parent : "base",
+								templateUrl : "views/login.html",
+								controller : "LogoutCtrl"
 							}).state("dashboard", {
 								url : "/dashboard",
 								parent : "base",
@@ -38,60 +46,161 @@
 								},
 								parent : "dashboard",
 								templateUrl : "views/dashboard/addscreens.html"
+							}).state("changePassword", {
+								url : "/changePassword",
+								data : {
+									requireLogin : true
+								},
+								parent : "dashboard",
+								templateUrl : "views/dashboard/changepassword.html"
 							})
 						} ]),
-		angular
-				.module("yapp")
-				.controller(
-						"LoginCtrl",
-						[
-								"$scope",
-								"$location",
-								"$http",
-								"$rootScope",
-								function(r, s, t,p) {
-									console.log("here : " + r.userName);
+						angular.module("yapp").service("UserService", function() {
+							var loggedInUser;
+							return {
+								getLoggedInUser : function () {
+									return loggedInUser;
+								},
+							
+								setLoggedInUser : function (userName) {
+									loggedInUser = userName;
+								}
+							}
+						}),
+						angular
+						.module("yapp")
+						.controller(
+								"LoginCtrl",
+								[
+										"$scope",
+										"$location",
+										"$http",
+										"$rootScope",
+										"UserService",
+										function(r, s, t, p, u) {
+											
+											r.submit = function() {
 
-									r.submit = function() {
+												if (r.userName == undefined
+														|| r.passwd == undefined) {
+													alert("Please enter username and password to login.");
+													return;
+												}
 
-										if (r.userName == undefined
-												|| r.passwd == undefined) {
-											alert("Please enter username and password to login.");
-											return;
-										}
 
-										console.log("[" + r.userName.trim()
-												+ "]");
+												if (r.userName.trim() == ""
+														|| r.passwd.trim() == "") {
+													alert("User name or password cannot contain spaces");
+													return;
+												}
 
-										if (r.userName.trim() == ""
-												|| r.passwd.trim() == "") {
-											alert("User name or password cannot contain spaces");
-											return;
-										}
-
-										var request = t({
-											method : "post",
-											url : "/reservationstatus/rest/validateUser/"
-													+ r.userName
-													+ "/"
-													+ r.passwd
-										});
-
-										request
-												.success(function(response) {
-													console.log(response.code);
-
-													if (response.code == 502) {
-														alert("User Validation Failed. Either the username or the password doesnt match our records");
-														return;
-													}
-
-													return s.path("/dashboard"), !1
+												var request = t({
+													method : "post",
+													url : "/reservationstatus/rest/validateUser/"
+															+ r.userName
+															+ "/"
+															+ r.passwd
 												});
 
-									}
+												request
+														.success(function(response) {
 
+															if (response.code == 502) {
+																alert("User Validation Failed. Either the username or the password doesnt match our records");
+																return;
+															}
+															u.setLoggedInUser(r.userName);
+															r.loggedInUser = r.userName;
+															return s.path("/dashboard"), !1
+														});
+
+											}
+											
+
+											
+											
+										} ]),
+						angular
+						.module("yapp")
+						.controller(
+								"LogoutCtrl",
+						[
+								"$location",
+								"$http",
+								"UserService",
+								function( s, t, u) {
+									
+									u.setLoggedInUser(null);
+									
+									var request = t({
+										method : "post",
+										url : "/reservationstatus/rest/logoutuser/admin/"
+									});
+									
+									request
+									.success(function(response) {
+										return s.path("/login"), !1
+									});										
+									
 								} ]),
+								angular
+								.module("yapp")
+								.controller(
+										"ChangePwdCtrl",
+								[		"$scope",
+										"$location",
+										"$http",
+										"UserService",
+										function(r, s, t, u) {
+											
+											if(u.getLoggedInUser() == null) {
+												alert ("User not logged in");
+												return s.path("/login"), !1
+											}											
+											
+											r.changePassword = function () {
+												
+												
+												
+												if (r.currentPasswd == undefined || r.newPasswd == undefined || r.confirmPasswd == undefined) {
+													alert("Passwords cannot be null");
+													return;
+												}
+												
+												if (r.newPasswd != r.confirmPasswd) {
+													alert("The new passwords does not match");
+													return;
+												}
+												
+
+												var request = t({
+													method : "post",
+													url : "/reservationstatus/rest/changePassword/admin/"
+															+ r.currentPasswd
+															+ "/"
+															+ r.newPasswd
+
+												});
+
+												
+												
+												request
+														.success(function(response) {
+
+															if (response.code == 502) {
+																alert("The current password does not match with the password stored in the DB for the user");
+																return;
+															}
+
+															alert("Password was changed successfully. Please login using new password")
+															return s.path("/login"), !1
+														});										
+												
+											}
+											
+									
+											
+										} ]),										
 		angular.module("yapp").controller("DashboardCtrl",
 				[ "$scope", "$state", function(r, t) {
 					r.$state = t
@@ -100,21 +209,26 @@
 				.module("yapp")
 				.controller(
 						"PlatformConfigController",
-						function($scope, $http) {
+						function($scope, $http, $location,UserService) {
+							
+							
 							$scope.hideTrainInfo = true;
 							$scope.hideAddForm = true;
 
-							console.log("Inside controller url");
+							
+							if(UserService.getLoggedInUser() == null) {
+								alert ("User not logged in");
+								return $location.path("/login"), !1
+							}
+							
 
 							$scope.getPlatformInfo = function() {
 								var wsUrl = "/reservationstatus/rest/getPlatforms";
-								console.log("url:" + wsUrl);
 
 								// blockUI.start();
 								$http.get(wsUrl, {
 									timeout : 15000
 								}).then(function(response) {
-									console.log(response);
 									$scope.platforms = response.data;
 
 								});
@@ -130,7 +244,6 @@
 							$scope.getTrainInfo = function() {
 								var wsUrl = "/reservationstatus/rest/getTrainInfo/"
 										+ $scope.selectedPlatform.screenIdentifier;
-								console.log("url:" + wsUrl);
 								$http.get(wsUrl).then(function(response) {
 
 									$scope.trainInfo = response.data;
@@ -155,7 +268,6 @@
 								var wsAddDataUrl = "/reservationstatus/rest/removePlatformConf/"
 										+ $scope.selectedPlatform.screenIdentifier;
 
-								console.log("url:" + wsAddDataUrl);
 								$http.post(wsAddDataUrl).then(
 										function(response) {
 
@@ -183,7 +295,6 @@
 
 								if ($scope.journeyClass == undefined
 										|| $scope.journeyClass == "") {
-									console.log("Class is mandatory field");
 									$scope.classMsg = "Class is mandatory field";
 									alert("Error occured while processing the data");
 									return;
@@ -191,8 +302,6 @@
 
 								if ($scope.stationCode == undefined
 										|| $scope.stationCode == "") {
-									console
-											.log("Station Code is mandatory field");
 									$scope.stationMsg = "Station Code is mandatory field";
 									alert("Error occured while processing the data");
 									return;
@@ -200,7 +309,6 @@
 
 								if ($scope.journeyDate == undefined
 										|| $scope.journeyDate == "") {
-									console.log("Date of Journey is mandatory");
 									$scope.dateMsg = "Date of Journey is mandatory";
 									alert("Error occured while processing the data");
 									return;
@@ -212,7 +320,6 @@
 										+ "-"
 										+ zeroPadNumber((jsDate.getMonth() + 1))
 										+ "-" + jsDate.getFullYear();
-								console.log("Date is " + dateOfJourney);
 								var wsAddDataUrl = "/reservationstatus/rest/configurePlatform/"
 										+ $scope.selectedPlatform.screenIdentifier
 										+ "/"
@@ -225,7 +332,6 @@
 										+ dateOfJourney
 										+ "/"
 										+ $scope.stationCode;
-								console.log("url:" + wsAddDataUrl);
 								$http.post(wsAddDataUrl).then(
 										function(response) {
 
@@ -237,12 +343,10 @@
 							};
 
 							$scope.getTrainInfoByNumber = function() {
-								console.log("here");
 
 								if ($scope.trainNumber != undefined) {
 									var wsUrl = "/reservationstatus/rest/getTrainInfoByNumber/"
 											+ $scope.trainNumber;
-									console.log("url:" + wsUrl);
 									$scope.trainNameMsg = "Loading train information .....";
 									// blockUI.start();
 									$http
@@ -254,8 +358,6 @@
 														$scope.trainNameMsg = "";
 														// blockUI.stop();
 														$scope.trainInfoByNumber = response.data;
-														console
-																.log($scope.trainInfoByNumber.trains[0].full_name)
 														$scope.trainName = $scope.trainInfoByNumber.trains[0].full_name;
 													});
 								}
@@ -264,10 +366,8 @@
 							$scope.checkClass = function() {
 								var classFound = false;
 								$scope.classMsg = "";
-								console.log("looping");
 								for ( var i in $scope.trainInfoByNumber.trains[0].classes) {
 									var journeyClass = $scope.trainInfoByNumber.trains[0].classes[i];
-									console.log(journeyClass["class-code"]);
 									if (journeyClass["class-code"] == $scope.journeyClass) {
 										classFound = true;
 										break;
@@ -294,7 +394,14 @@
 				.module("yapp")
 				.controller(
 						"ScreenAddController",
-						function($scope, $http) {
+						function($scope, $http,$location,UserService) {
+							
+							
+							if(UserService.getLoggedInUser() == null) {
+								alert ("User not logged in");
+								return $location.path("/login"), !1
+							}
+							
 							$scope.hideAddForm = true;
 
 							$scope.showAddConfiguration = function() {
@@ -321,7 +428,6 @@
 										+ "/"
 										+ $scope.screenNumber;
 
-								console.log("url:" + wsAddDataUrl);
 								$http.post(wsAddDataUrl).then(
 										function(response) {
 
@@ -333,13 +439,11 @@
 
 							$scope.getConfigInfo = function() {
 								var wsUrl = "/reservationstatus/rest/getPlatforms";
-								console.log("url:" + wsUrl);
 
 								// blockUI.start();
 								$http.get(wsUrl, {
 									timeout : 15000
 								}).then(function(response) {
-									console.log(response);
 									$scope.platformData = response.data;
 
 								});
@@ -352,3 +456,4 @@
 							};
 
 						});
+						

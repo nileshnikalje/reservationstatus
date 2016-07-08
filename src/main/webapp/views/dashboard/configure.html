@@ -67,10 +67,10 @@ table.formtable th  {
 </head>
 <body ng-app="yapp">
 
-<div ng-controller="PlatformConfigController" >
-<h1> Welcome to Bhopal Railway Station</h1>
+<div class="other-page" ng-controller="PlatformConfigController" >
+<h1 style="color:white"> Reservation Charting System - Screen Configuration</h1>
    <form>
-         <b>Select New platform   : </b> 
+         <b style="color:white">Select a screen to configure   : </b> 
         <select ng-model="selectedPlatform" ng-options="x.screenName for x in platforms " ng-change="selectPlatform()">
         </select>
     
@@ -79,9 +79,9 @@ table.formtable th  {
 
 
     <div ng-model="currentInfo"  ng-hide="hideTrainInfo">
-        <h2>Current Information been displayed on {{selectedPlatform.screenName}}</h2>
+        <h2 style="color:white">Current Information been displayed on {{selectedPlatform.screenName}}</h2>
 		<table class="maintable">
-			<tr >
+			<tr style= "font-weight: bold">
 				<td>Train Number</td>
 				<td>Train Name</td>
 				<td>Station</td>
@@ -99,16 +99,16 @@ table.formtable th  {
     
     
     <br>
-    <div align="center"><button ng-click="showAddForm()" >Change Info</button>     <button ng-click="removeTrainConf()" >Remove Info</button>   </div>
+    <div align="center" style="font-weight: bold"><button ng-click="showAddForm()" >Change Info</button>     <button ng-click="removeTrainConf()" >Remove Info</button>   </div>
     
     <div ng-hide="hideAddForm">    
     
     
-    <h3 >Use the form below to update the information on {{selectedPlatform.screenName}}</h3>
+    <h3 style="color:white" >Use the form below to update the information on {{selectedPlatform.screenName}}</h3>
     <form >
 	    <table class="formtable">
 	    	<tr>
-				<td>Train Number</td>
+				<td style="color:white">Train Number</td>
 	    	   	<td><input type="text"  ng-model="trainNumber" ng-blur="getTrainInfoByNumber()" >{{trainNumberMsg}}</td>
 	    	  </tr>
 	          <tr>
@@ -116,19 +116,19 @@ table.formtable th  {
 	          	<td><input type="text"  ng-model="trainName" disabled="disabled">{{trainNameMsg}}</td>
 			  </tr>
 			  <tr>	
-			  	<td>Class</td>
+			  	<td style="color:white">Class</td>
 			  	<td><input type="text"  ng-model="journeyClass" ng-blur="checkClass()">{{classMsg}}</td>
 	    	  </tr>
 	    	  <tr>	
-	    	  	<td>Station</td>
+	    	  	<td style="color:white">Station</td>
 	    	  	<td><input type="text"  ng-model="stationCode"> {{stationMsg}}</td>
 	    	  </tr>
 	    	  <tr>
-	    	  	<td>Date</td>
+	    	  	<td style="color:white">Date</td>
 	    	  	<td><input type="date" ng-model="journeyDate"> {{dateMsg}}</td>
 	    	  </tr>
 	    	  <tr>
-	    	  	<td><button ng-click="updateTrainInfo()" ng-disabled="disableSubmit">Submit</button></td>
+	    	  	<td><button ng-click="updateTrainInfo()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
 	    	  	<td> </td>
 	    	  </tr>    	  
 	    </table>
