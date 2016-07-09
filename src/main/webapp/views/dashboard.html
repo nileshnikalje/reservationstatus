@@ -2,18 +2,24 @@
 	<div class=container-fluid>
 		<div class=row>
 			<div class="col-sm-3 col-md-2 sidebar">
-				<div class=text-center>
+				<div class=text-center >
 					<h2 class=brand>
 						Bhopal Railway Station 
 					</h2>
-					<img src=images/rail-logo.png class=user-avatar><br> <a
-						ui-sref=login class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
+					<img src=images/rail-logo.png class=user-avatar><br> 
+					<p> Welcome {{loggedInUser}} </p>
+					<a
+						ui-sref=logout class="btn btn-white btn-outline btn-rounded btn-sm">Logout</a>
 				</div>
 				<ul class="nav nav-sidebar">
 					<li ng-class="{active: $state.includes('configure')}"><a
-						ui-sref=configure>Platform Configuration <span class=sr-only>(current)</span></a></li>
+						ui-sref=configure>Screen Configuration <span class=sr-only>(current)</span></a></li>
  					<li ng-class="{active: $state.includes('addScreens')}"><a 
- 						ui-sref=addScreens>Add screens</a></li> 
+ 						ui-sref=addScreens>Add/Remove screens</a></li> 
+ 					<li ng-class="{active: $state.includes('changePassword')}"><a 
+ 						ui-sref=changePassword>Change Password</a></li> 
+ 					<li ng-class="{active: $state.includes('userAdmin')}"><a  ng-hide="hideUserAdminLink"
+ 						ui-sref=userAdmin>User Administration</a></li> 
 <!-- 					<li><a href="http://startreact.com/product/ani-theme/">Free -->
 <!-- 							React version</a></li> -->
 <!-- 					<li><a href=http://www.strapui.com/ani-angularjs-theme>Angular -->

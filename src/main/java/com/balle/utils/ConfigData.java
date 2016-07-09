@@ -12,7 +12,7 @@ import com.balle.dao.UserDetails;
 
 
 public class ConfigData implements Serializable{
-	public ArrayList<UserDetails> users;
+	public List<UserDetails> users;
 	public List<ScreenDetails> screens;
 	public HashMap<String, TrainInfo> trainInfoData;
 	private static final long serialVersionUID = 5462223600l;

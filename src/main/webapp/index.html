@@ -97,7 +97,6 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
 	var data_all, dashBoardPageSize = 19, dashBoardPageTime = 5000, pageCount = 0, timeOutHandler, pageCounter = 0;
 	
 	var wsUrl = "/reservationstatus/rest/getTrainInfo/" + this.source;
-	console.log("will be hitting url:" + wsUrl);
     $http.get(wsUrl)
     .then(function(response) {
     	
@@ -112,7 +111,6 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
         .then(function(resvResponse) {
         	
         	//$scope.resvResponse = resvResponse.data; 
-        	console.log("length res:" + Object.keys(resvResponse.data).length);
         	
         	var responsePageCount = Math.ceil(Object.keys(resvResponse.data).length/dashBoardPageSize);
         	$scope.totalNumberOfPages = responsePageCount;
@@ -124,7 +122,6 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
     
     function processResponse(responseData, responsePageCount) {
 		
-		console.log("Calling processResponse");
     	if (responseData != undefined && responsePageCount != undefined) {
     		
     		data_all = responseData;
@@ -138,7 +135,6 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
     	if (pageCounter  < pageCount) {
     		//clearTimeout(timeOutHandler);
     		$scope.tableData = data_all.slice(pageCounter*dashBoardPageSize,pageCounter*dashBoardPageSize+dashBoardPageSize);
-    		console.log("Data: "+ $scope.tableData);
     		pageCounter ++;
     		$scope.pgCounter = pageCounter;
     		//timeOutHandler = setTimeout(processResponse,15000);

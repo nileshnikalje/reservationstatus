@@ -1,4 +1,5 @@
-package com.balle.services;
+package com.balle.services; // modified for git -- for 3 way merge -- now for ending changes for master
+
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -10,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -31,6 +35,23 @@ import com.google.gson.GsonBuilder;
 @Path("/")
 public class RestService {
 
+	
+	Map<String,String> loggedInUsers = new HashMap<>();
+	
+	@GET
+	@Path("/getScreenConfig")
+	public String getScreenConfig() throws IOException {
+
+		HashMap<String, TrainInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+
+		String returnVal = new GsonBuilder().create().toJson(data);
+		System.out.println("rturn vale:" + returnVal);
+		return returnVal;
+
+	}
+	
+	
+	
 	@GET
 	@Path("/getTrainInfo/{source}")
 	public String getTrainInfo(@PathParam("source") String source) throws IOException {
@@ -102,7 +123,8 @@ public class RestService {
 			@PathParam("trainNumber") String trainNumber,
 			@PathParam("trainName") String trainName,
 			@PathParam("journeyClass") String journeyClass,
-			@PathParam("date") String date, @PathParam("station") String station) throws IOException {
+			@PathParam("date") String date, 
+			@PathParam("station") String station) throws IOException {
 
 		ConfigUtils configUtils = new ConfigUtils();
 		ConfigData  configData = configUtils.getConfigData();
@@ -116,13 +138,15 @@ public class RestService {
 			
 		}
 		
-
-		DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-uuuu");
-		LocalDate ld = LocalDate.parse(date, df);
-		System.out.println(ld);
-		String dateFormatted = ld.format(
-				DateTimeFormatter.ofPattern("dd-MMM-uuuu")).toUpperCase();
-		System.out.println(dateFormatted);
+		String dateFormatted = null;
+		if (date != null) {
+			DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-uuuu");
+			LocalDate ld = LocalDate.parse(date, df);
+			System.out.println(ld);
+			dateFormatted = ld.format(
+					DateTimeFormatter.ofPattern("dd-MMM-uuuu")).toUpperCase();
+			System.out.println(dateFormatted);
+		}
 
 		if (data.containsKey(source)) {
 			System.out.println("Data contains Key");
@@ -158,7 +182,8 @@ public class RestService {
 		HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
 		
 		if (trainInfoData != null && trainInfoData.containsKey(source)) {
-			trainInfoData.remove(source);
+			trainInfoData.put(source, new TrainInfo());
+			//trainInfoData.remove(source);
 			configData.trainInfoData = trainInfoData;
 			configUtils.writeConfigData(configData);
 		}
@@ -175,7 +200,7 @@ public class RestService {
 			returnString = RailwayServices.getTrainInfoByNumber(trainNumber);
 		else
 			returnString = RailwayServices.getTrainInfoByNumber("12004");
-		System.out.println(returnString);
+
 		return returnString;
 	}
 
@@ -186,7 +211,6 @@ public class RestService {
 	public String validatePassword(@PathParam("userName") String userName,
 			@PathParam("password") String password) throws IOException {
 
-		System.out.println("Inside rs");
 
 		ConfigData cd = new ConfigUtils().getConfigData();
 		boolean isUserValid = false;
@@ -199,13 +223,14 @@ public class RestService {
 			if (ud.getUserName().equals(userName)
 					&& ud.getPassword().equals(password)) {
 				isUserValid = true;
+				loggedInUsers.put(userName, userName);
 			}
 		}
 
-		if (isUserValid && userName.equals("admin")
-				&& password.equals("password")) {
-			return ("{\"code\" : \"501\"}");
-		}
+//		if (isUserValid && userName.equals("admin")
+//				&& password.equals("password")) {
+//			return ("{\"code\" : \"501\"}");
+//		}
 
 		if (!isUserValid) {
 			return ("{\"code\" : \"502\"}");
@@ -215,6 +240,64 @@ public class RestService {
 
 	}
 
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/changePassword/{userName}/{currentPassword}/{newPassword}")
+	public String changePassword(@PathParam("userName") String userName,
+								 @PathParam("currentPassword") String currentPassword,
+								 @PathParam("newPassword") String newPassword) throws IOException {
+
+
+
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		boolean isUserValid = false;
+
+		Iterator<UserDetails> i = cd.users.iterator();
+		while (i.hasNext()) {
+
+			UserDetails ud = i.next();
+
+			if ( ud.getUserName().equals(userName) && ud.getPassword().equals(currentPassword)) {
+				isUserValid = true;
+				ud.setPassword(newPassword);
+				configUtils.writeConfigData(cd);
+				return ("{\"code\" : \"500\"}");
+			}
+		}
+
+
+
+		return ("{\"code\" : \"502\"}");
+
+		
+	}
+	
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/logoutuser/{userName}")
+	public void logout(@PathParam("userName") String userName) throws IOException {
+		System.out.println("Came for logging out : " + userName);
+		loggedInUsers.remove(userName);
+	}	
+	
+	
+	
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/isUserActive/{userName}")
+	public String isUserActive(@PathParam("userName") String userName) {
+		if (loggedInUsers.containsKey(userName))
+			return "Y";
+		else
+			return "N";
+	}
+	
+	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -253,12 +336,62 @@ public class RestService {
 				configData.screens.add(screenDetails);
 			}
 			
+			
+			
+			
 		}
 		
 		utils.writeConfigData(configData);
+		postData(screenDetails.getScreenIdentifier(), null, null, null, null, null);
 
 	}
 
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/removeScreen/{screenIdentifier}")
+	public void removeScreen(@PathParam("screenIdentifier") String screenIdentifier) throws IOException {
+
+		System.out.println("removing " + screenIdentifier );
+
+		ConfigUtils utils = new ConfigUtils();
+		ConfigData configData = utils.getConfigData();
+		
+
+		ScreenDetails screenDetails = null;
+
+		
+		if (configData.screens != null) {
+			// screens is not a null list
+			Iterator<ScreenDetails> i = configData.screens.iterator();
+
+			while (i.hasNext()) {
+				ScreenDetails sd =  i.next();
+				if (sd.getScreenIdentifier().equals(screenIdentifier) ) {
+					i.remove();
+					
+					HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
+					
+					if (trainInfoData != null && trainInfoData.containsKey(screenIdentifier)) {
+						trainInfoData.remove(screenIdentifier);
+						configData.trainInfoData = trainInfoData;
+					}					
+					
+					
+					utils.writeConfigData(configData);
+									
+					break;
+				}
+			}
+
+		}
+		
+
+
+	}
+	
+	
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -271,5 +404,82 @@ public class RestService {
 		return new GsonBuilder().create().toJson(cd.screens);
 
 	}
+	
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getUsers")
+	public String getUsers() throws IOException {
+
+		ConfigData cd = new ConfigUtils().getConfigData();
+		System.out.println("output:" + new GsonBuilder().create().toJson(cd.users));
+		return new GsonBuilder().create().toJson(cd.users);
+
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/addUser/{userName}/{password}")
+	public void addUser(@PathParam("userName") String userName, 
+						   @PathParam("password") String password) throws IOException {
+
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		List<UserDetails> users = cd.users;
+		boolean userFound = false;
+		System.out.println("username + " + userName);
+		
+		Iterator<UserDetails> iter = users.iterator();
+		UserDetails userDetails = null;
+		while(iter.hasNext()) {
+			userDetails = iter.next();
+			System.out.println(userDetails.getUserName());
+			if (userDetails.getUserName().equals(userName)) {
+				userDetails.setPassword(password);
+				userFound = true;
+				break;
+			}
+		}
+		
+		if (!userFound) {
+			users.add(new UserDetails(userName,password));
+		}
+		cd.users = users;
+		configUtils.writeConfigData(cd);
+
+	}
+
+
+
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/deleteUser/{userName}")
+	public void deleteUser(@PathParam("userName") String userName) throws IOException {
+	
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		List<UserDetails> users = cd.users;
+		boolean userFound = false;
+		System.out.println("username + " + userName);
+		
+		Iterator<UserDetails> iter = users.iterator();
+		UserDetails userDetails = null;
+		while(iter.hasNext()) {
+			userDetails = iter.next();
+			System.out.println(userDetails.getUserName());
+			if (userDetails.getUserName().equals(userName)) {
+				iter.remove();
+				break;
+			}
+		}
+		
+		cd.users = users;
+		configUtils.writeConfigData(cd);
+	
+	}
 
 }
+
