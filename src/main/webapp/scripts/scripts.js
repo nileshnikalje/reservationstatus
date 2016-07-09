@@ -46,6 +46,13 @@
 								},
 								parent : "dashboard",
 								templateUrl : "views/dashboard/addscreens.html"
+							}).state("userAdmin", {
+								url : "/userAdmin",
+								data : {
+									requireLogin : true
+								},
+								parent : "dashboard",
+								templateUrl : "views/dashboard/useradmin.html"
 							}).state("changePassword", {
 								url : "/changePassword",
 								data : {
@@ -111,6 +118,8 @@
 															}
 															u.setLoggedInUser(r.userName);
 															r.loggedInUser = r.userName;
+															
+
 															return s.path("/dashboard"), !1
 														});
 
@@ -158,6 +167,7 @@
 												return s.path("/login"), !1
 											}											
 											
+											r.loggedInUser = u.getLoggedInUser();
 											r.changePassword = function () {
 												
 												
@@ -175,7 +185,9 @@
 
 												var request = t({
 													method : "post",
-													url : "/reservationstatus/rest/changePassword/admin/"
+													url : "/reservationstatus/rest/changePassword/"
+															+ r.loggedInUser 
+															+ "/"
 															+ r.currentPasswd
 															+ "/"
 															+ r.newPasswd
@@ -202,8 +214,21 @@
 											
 										} ]),										
 		angular.module("yapp").controller("DashboardCtrl",
-				[ "$scope", "$state", function(r, t) {
-					r.$state = t
+				[ "$scope", "$state", "UserService", function(r, t, u) {
+					r.$state = t;
+					r.loggedInUser = u.getLoggedInUser();
+					console.log("inside dash controller");
+				
+					if (r.loggedInUser == "admin") {
+						console.log("showing link");
+						r.hideUserAdminLink = false;
+					}
+					else {
+						console.log("hiding link");
+						r.hideUserAdminLink = true;
+					}
+					
+					
 				} ]),
 		angular
 				.module("yapp")
@@ -212,7 +237,7 @@
 						function($scope, $http, $location,UserService) {
 							
 							
-							$scope.hideTrainInfo = true;
+							//$scope.hideTrainInfo = true;
 							$scope.hideAddForm = true;
 
 							
@@ -221,6 +246,28 @@
 								return $location.path("/login"), !1
 							}
 							
+							$scope.getScreenConfig = function() {
+								var wsScreenDataUrl = "/reservationstatus/rest/getScreenConfig";
+								
+								$http.get(wsScreenDataUrl, {
+									timeout : 15000
+								}).then(function(response) {
+									$scope.screenData = response.data;
+									console.log("Screen data length:" + Object.keys($scope.screenData).length)
+									if(Object.keys($scope.screenData).length < 1) {
+										$scope.hideNoScreenConfigMessage = false;
+										$scope.hideScreenConfigTable = true;
+									}
+									else {
+										$scope.hideNoScreenConfigMessage = true
+										$scope.hideScreenConfigTable = false;
+									}
+									
+
+								});
+							}
+							
+							$scope.getScreenConfig();							
 
 							$scope.getPlatformInfo = function() {
 								var wsUrl = "/reservationstatus/rest/getPlatforms";
@@ -236,24 +283,27 @@
 
 							$scope.getPlatformInfo();
 
-							$scope.selectPlatform = function() {
-								$scope.getTrainInfo();
-								$scope.hideAddForm = true;
-							};
+//							$scope.selectPlatform = function() {
+//								$scope.getTrainInfo();
+//								//$scope.hideTrainInfo = false;
+//								$scope.hideAddForm = true;
+//							};
 
-							$scope.getTrainInfo = function() {
-								var wsUrl = "/reservationstatus/rest/getTrainInfo/"
-										+ $scope.selectedPlatform.screenIdentifier;
-								$http.get(wsUrl).then(function(response) {
+//							$scope.getTrainInfo = function() {
+//								var wsUrl = "/reservationstatus/rest/getTrainInfo/"
+//										+ $scope.selectedScreenIdentifier;
+//								$http.get(wsUrl).then(function(response) {
+//
+//									$scope.trainInfo = response.data;
+//
+//									
+//
+//								});
+//							};
 
-									$scope.trainInfo = response.data;
-
-									$scope.hideTrainInfo = false;
-
-								});
-							};
-
-							$scope.showAddForm = function() {
+							$scope.showAddForm = function(screenIdentifier) {
+								
+								$scope.selectedScreenIdentifier = screenIdentifier;
 								$scope.hideAddForm = false;
 								$scope.trainNumber = "";
 								$scope.trainName = "";
@@ -263,17 +313,18 @@
 
 							};
 
-							$scope.removeTrainConf = function() {
+							$scope.removeTrainConf = function(screenIdentifier) {
 
 								var wsAddDataUrl = "/reservationstatus/rest/removePlatformConf/"
-										+ $scope.selectedPlatform.screenIdentifier;
+										+ screenIdentifier;
 
 								$http.post(wsAddDataUrl).then(
 										function(response) {
 
 											alert("Data removed successfully");
 											$scope.hideAddForm = true;
-											$scope.getTrainInfo();
+											//$scope.getTrainInfo();
+											$scope.getScreenConfig();
 										});
 							}
 
@@ -321,7 +372,7 @@
 										+ zeroPadNumber((jsDate.getMonth() + 1))
 										+ "-" + jsDate.getFullYear();
 								var wsAddDataUrl = "/reservationstatus/rest/configurePlatform/"
-										+ $scope.selectedPlatform.screenIdentifier
+										+ $scope.selectedScreenIdentifier
 										+ "/"
 										+ $scope.trainNumber
 										+ "/"
@@ -332,12 +383,18 @@
 										+ dateOfJourney
 										+ "/"
 										+ $scope.stationCode;
+								
+								
+								
 								$http.post(wsAddDataUrl).then(
 										function(response) {
 
 											alert("Data added successfully");
 											$scope.hideAddForm = true;
-											$scope.getTrainInfo();
+											//$scope.getTrainInfo();
+											$scope.getScreenConfig();
+											//$scope.selectedPlatform=null;
+											//$scope.hideTrainInfo = true;
 										});
 
 							};
@@ -390,70 +447,216 @@
 							}
 
 						}),
-		angular
-				.module("yapp")
-				.controller(
-						"ScreenAddController",
-						function($scope, $http,$location,UserService) {
-							
-							
-							if(UserService.getLoggedInUser() == null) {
-								alert ("User not logged in");
-								return $location.path("/login"), !1
-							}
-							
-							$scope.hideAddForm = true;
+						angular
+						.module("yapp")
+						.controller(
+								"ScreenAddController",
+								function($scope, $http,$location,UserService) {
+									
+									hideNoDataMessage = false;
+									
+									if(UserService.getLoggedInUser() == null) {
+										alert ("User not logged in");
+										return $location.path("/login"), !1
+									}
+									
+									$scope.hideAddForm = true;
 
-							$scope.showAddConfiguration = function() {
-								$scope.hideAddForm = false;
-							}
+									$scope.showAddConfiguration = function() {
+										$scope.hideAddForm = false;
+									}
 
-							$scope.addPlatforms = function() {
+									
+									$scope.removeScreen = function(screenIdentifier) {
+										var wsAddDataUrl = "/reservationstatus/rest/removeScreen/"
+											+ screenIdentifier;
 
-								if ($scope.platformNumber == undefined
-										|| $scope.platformNumber == '0'
-										|| $scope.screenNumber == undefined
-										|| $scope.screenNumber == '0') {
-									alert("Platform Number or Screen Number is required and should not be zero");
+									$http.post(wsAddDataUrl).then(
+											function(response) {
 
-									return;
-								}
+												alert("Screen Removed successfully");
+												$scope.getConfigInfo();
+											});
+									}
+									
+									$scope.addPlatforms = function() {
 
-								if ($scope.screenNumber == undefined) {
-									$scope.screenNumber = "";
-								}
+										if ($scope.platformNumber == undefined
+												|| $scope.platformNumber == '0'
+												|| $scope.screenNumber == undefined
+												|| $scope.screenNumber == '0') {
+											alert("Platform Number or Screen Number is required and should not be zero");
 
-								var wsAddDataUrl = "/reservationstatus/rest/addScreen/"
-										+ $scope.platformNumber
-										+ "/"
-										+ $scope.screenNumber;
+											return;
+										}
 
-								$http.post(wsAddDataUrl).then(
-										function(response) {
+										if ($scope.screenNumber == undefined) {
+											$scope.screenNumber = "";
+										}
 
-											alert("Data added successfully");
-											$scope.getConfigInfo();
+										var wsAddDataUrl = "/reservationstatus/rest/addScreen/"
+												+ $scope.platformNumber
+												+ "/"
+												+ $scope.screenNumber;
+
+										$http.post(wsAddDataUrl).then(
+												function(response) {
+													$scope.hideAddForm = true;
+													$scope.platformNumber=null;
+													$scope.screenNumber = null;
+													$scope.hideConfigurationInfo = false;
+													alert("Data added successfully");
+													$scope.getConfigInfo();
+												});
+
+									}
+
+									$scope.getConfigInfo = function() {
+										var wsUrl = "/reservationstatus/rest/getPlatforms";
+										$scope.platformData = null;
+										// blockUI.start();
+										$http.get(wsUrl, {
+											timeout : 15000
+										}).then(function(response) {
+											$scope.platformData = response.data;
+											
+											if(Object.keys($scope.platformData).length < 1) {
+												console.log("screen data is null");
+												$scope.hideConfigurationInfo = true;
+												$scope.hideNoDataMessage = false;
+											}
+											else {
+												console.log("Data is present");
+												$scope.hideConfigurationInfo = false;
+												$scope.hideNoDataMessage = true;										
+											}
+											console.log("screen data length= " + Object.keys($scope.platformData).length);
 										});
+									};
 
-							}
+									$scope.getConfigInfo();
 
-							$scope.getConfigInfo = function() {
-								var wsUrl = "/reservationstatus/rest/getPlatforms";
+								}),
+						angular
+						.module("yapp")
+						.controller(
+								"UserAdminController",
+								function($scope, $http,$location,UserService) {
+									
+									if(UserService.getLoggedInUser() == null) {
+										alert ("User not logged in");
+										return $location.path("/login"), !1
+									}
+									
+									$scope.hideAddUserForm = true;
+									$scope.hideChangePasswordForm = true;
+									$scope.userNameToChange = null;
+				
+									$scope.showAddUserForm = function() {
+										$scope.hideAddUserForm = false;
+									}
+				
+									
+									$scope.showChangePasswordForm = function(userName) {
+										$scope.hideChangePasswordForm = false;
+										$scope.userNameToChange = userName;
+									}
+									
+									$scope.deleteUser = function(userName) {
+										
+										if (userName == "admin") {
+												alert("Admin user cannot be deleted");
+												return;
+										}
+										var wsAddDataUrl = "/reservationstatus/rest/deleteUser/"
+											+ userName;
+				
+									$http.post(wsAddDataUrl).then(
+											function(response) {
+				
+												alert("User Deleted successfully");
+												$scope.getUsers();
+											});
+									}
+									
+									$scope.addUser = function() {
+										if ($scope.userName == undefined
+												|| $scope.newPassword == undefined
+												|| $scope.confirmPassword == undefined) {
+											alert("User name and password should not be empty");
+				
+											return;
+										}
+				
+										if ( $scope.newPassword != $scope.confirmPassword ) {
+											alert("Entered Passwords do not match");
+				
+											return;
+										}
+				
+										var wsAddDataUrl = "/reservationstatus/rest/addUser/"
+												+ $scope.userName
+												+ "/"
+												+ $scope.confirmPassword;
+										console.log("Calling " + wsAddDataUrl)
+				
+										$http.post(wsAddDataUrl).then(
+												function(response) {
+													$scope.hideAddUserForm = true;
+													$scope.userName=null;
+													$scope.newPassword = null;
+													$scope.confirmPassword = null;
+													alert("User added successfully");
+													$scope.getUsers();
+												});
+				
+									}
+				
+									
+									$scope.changePassword = function() {
+										if ($scope.newChangePassword == undefined
+												|| $scope.confirmChangePassword == undefined) {
+											alert("passwords should not be empty");
+				
+											return;
+										}
+				
+										if ( $scope.newChangePassword != $scope.confirmChangePassword ) {
+											alert("Entered Passwords do not match");
+				
+											return;
+										}
+				
+										var wsAddDataUrl = "/reservationstatus/rest/addUser/"
+												+ $scope.userNameToChange
+												+ "/"
+												+ $scope.newChangePassword;
+										console.log("Calling " + wsAddDataUrl)
+				
+										$http.post(wsAddDataUrl).then(
+												function(response) {
+													$scope.hideChangePasswordForm = true;
+													$scope.newChangePassword=null;
+													$scope.confirmChangePassword = null;
+													$scope.userNameToChange = null;
+													alert("Password changed successfully");
+													//$scope.getUsers();
+												});
+				
+									}									
+									
+									$scope.getUsers = function() {
+										var wsUrl = "/reservationstatus/rest/getUsers";
+										$scope.usersData = null;
+										$http.get(wsUrl, {
+											timeout : 15000
+										}).then(function(response) {
+											$scope.usersData = response.data;
 
-								// blockUI.start();
-								$http.get(wsUrl, {
-									timeout : 15000
-								}).then(function(response) {
-									$scope.platformData = response.data;
-
+										});
+									};
+				
+									$scope.getUsers();
+				
 								});
-							};
-
-							$scope.getConfigInfo();
-
-							$scope.removeScreen = function(r, t) {
-								console("inside remove + " + r + ":" + t);
-							};
-
-						});
-						
+								

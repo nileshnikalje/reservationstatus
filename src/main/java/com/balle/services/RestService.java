@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -35,6 +37,21 @@ public class RestService {
 
 	
 	Map<String,String> loggedInUsers = new HashMap<>();
+	
+	@GET
+	@Path("/getScreenConfig")
+	public String getScreenConfig() throws IOException {
+
+		HashMap<String, TrainInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+
+		String returnVal = new GsonBuilder().create().toJson(data);
+		System.out.println("rturn vale:" + returnVal);
+		return returnVal;
+
+	}
+	
+	
+	
 	@GET
 	@Path("/getTrainInfo/{source}")
 	public String getTrainInfo(@PathParam("source") String source) throws IOException {
@@ -106,7 +123,8 @@ public class RestService {
 			@PathParam("trainNumber") String trainNumber,
 			@PathParam("trainName") String trainName,
 			@PathParam("journeyClass") String journeyClass,
-			@PathParam("date") String date, @PathParam("station") String station) throws IOException {
+			@PathParam("date") String date, 
+			@PathParam("station") String station) throws IOException {
 
 		ConfigUtils configUtils = new ConfigUtils();
 		ConfigData  configData = configUtils.getConfigData();
@@ -120,13 +138,15 @@ public class RestService {
 			
 		}
 		
-
-		DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-uuuu");
-		LocalDate ld = LocalDate.parse(date, df);
-		System.out.println(ld);
-		String dateFormatted = ld.format(
-				DateTimeFormatter.ofPattern("dd-MMM-uuuu")).toUpperCase();
-		System.out.println(dateFormatted);
+		String dateFormatted = null;
+		if (date != null) {
+			DateTimeFormatter df = DateTimeFormatter.ofPattern("dd-MM-uuuu");
+			LocalDate ld = LocalDate.parse(date, df);
+			System.out.println(ld);
+			dateFormatted = ld.format(
+					DateTimeFormatter.ofPattern("dd-MMM-uuuu")).toUpperCase();
+			System.out.println(dateFormatted);
+		}
 
 		if (data.containsKey(source)) {
 			System.out.println("Data contains Key");
@@ -162,7 +182,8 @@ public class RestService {
 		HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
 		
 		if (trainInfoData != null && trainInfoData.containsKey(source)) {
-			trainInfoData.remove(source);
+			trainInfoData.put(source, new TrainInfo());
+			//trainInfoData.remove(source);
 			configData.trainInfoData = trainInfoData;
 			configUtils.writeConfigData(configData);
 		}
@@ -315,12 +336,62 @@ public class RestService {
 				configData.screens.add(screenDetails);
 			}
 			
+			
+			
+			
 		}
 		
 		utils.writeConfigData(configData);
+		postData(screenDetails.getScreenIdentifier(), null, null, null, null, null);
 
 	}
 
+	
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/removeScreen/{screenIdentifier}")
+	public void removeScreen(@PathParam("screenIdentifier") String screenIdentifier) throws IOException {
+
+		System.out.println("removing " + screenIdentifier );
+
+		ConfigUtils utils = new ConfigUtils();
+		ConfigData configData = utils.getConfigData();
+		
+
+		ScreenDetails screenDetails = null;
+
+		
+		if (configData.screens != null) {
+			// screens is not a null list
+			Iterator<ScreenDetails> i = configData.screens.iterator();
+
+			while (i.hasNext()) {
+				ScreenDetails sd =  i.next();
+				if (sd.getScreenIdentifier().equals(screenIdentifier) ) {
+					i.remove();
+					
+					HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
+					
+					if (trainInfoData != null && trainInfoData.containsKey(screenIdentifier)) {
+						trainInfoData.remove(screenIdentifier);
+						configData.trainInfoData = trainInfoData;
+					}					
+					
+					
+					utils.writeConfigData(configData);
+									
+					break;
+				}
+			}
+
+		}
+		
+
+
+	}
+	
+	
 	@GET
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -333,5 +404,82 @@ public class RestService {
 		return new GsonBuilder().create().toJson(cd.screens);
 
 	}
+	
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/getUsers")
+	public String getUsers() throws IOException {
+
+		ConfigData cd = new ConfigUtils().getConfigData();
+		System.out.println("output:" + new GsonBuilder().create().toJson(cd.users));
+		return new GsonBuilder().create().toJson(cd.users);
+
+	}
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/addUser/{userName}/{password}")
+	public void addUser(@PathParam("userName") String userName, 
+						   @PathParam("password") String password) throws IOException {
+
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		List<UserDetails> users = cd.users;
+		boolean userFound = false;
+		System.out.println("username + " + userName);
+		
+		Iterator<UserDetails> iter = users.iterator();
+		UserDetails userDetails = null;
+		while(iter.hasNext()) {
+			userDetails = iter.next();
+			System.out.println(userDetails.getUserName());
+			if (userDetails.getUserName().equals(userName)) {
+				userDetails.setPassword(password);
+				userFound = true;
+				break;
+			}
+		}
+		
+		if (!userFound) {
+			users.add(new UserDetails(userName,password));
+		}
+		cd.users = users;
+		configUtils.writeConfigData(cd);
+
+	}
+
+
+
+
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/deleteUser/{userName}")
+	public void deleteUser(@PathParam("userName") String userName) throws IOException {
+	
+		ConfigUtils configUtils = new ConfigUtils();
+		ConfigData cd = configUtils.getConfigData();
+		List<UserDetails> users = cd.users;
+		boolean userFound = false;
+		System.out.println("username + " + userName);
+		
+		Iterator<UserDetails> iter = users.iterator();
+		UserDetails userDetails = null;
+		while(iter.hasNext()) {
+			userDetails = iter.next();
+			System.out.println(userDetails.getUserName());
+			if (userDetails.getUserName().equals(userName)) {
+				iter.remove();
+				break;
+			}
+		}
+		
+		cd.users = users;
+		configUtils.writeConfigData(cd);
+	
+	}
 
 }
+

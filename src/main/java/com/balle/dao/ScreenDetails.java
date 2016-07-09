@@ -51,8 +51,8 @@ public class ScreenDetails implements Serializable{
 		return screenIdentifier;
 	}
 	public void setScreenIdentifier() {
-		this.screenIdentifier = "platform" + String.format("%2s" ,platformNumber).replace(" ","0") + 
-				"screen" + String.format("%2s" ,screenNumber).replace(" ","0");
+		this.screenIdentifier = "Platform" + String.format("%2s" ,platformNumber).replace(" ","0") + 
+				"-Screen" + String.format("%2s" ,screenNumber).replace(" ","0");
 	}
 
 	public void setScreenName() {

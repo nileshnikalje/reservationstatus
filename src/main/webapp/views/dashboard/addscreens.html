@@ -1,15 +1,16 @@
 <div class="other-page" ng-controller="ScreenAddController" >
-<h1 style="color:white"> Reservation Charting System - Add/Remove Screens</h1>
+<h2 style="color:white"> Reservation Charting System - Add/Remove Screens</h2>
    <form>
-
+	<h1 ng-hide="hideNoDataMessage" style="color:white">No Screens Added. Please use the Add Screen button to add some screens</h1>
     <div ng-model="currentInfo"  ng-hide="hideConfigurationInfo">
-        <h2 style="color:white">Current Screen Configurations </h2>
+        <h1 style="color:white">Current Screens </h1>
 		<table class="maintable">
 			<tr >
 				<b>
 					<td><b>Platform No</b></td>
 					<td><b>Screen No</b></td>
 					<td><b>Screen Identifier</b></td>
+					<td><b>Remove Screen</b></td>
 				</b>
 
 			</tr>
@@ -17,12 +18,13 @@
 				<td>{{config.platformNumber}}</td>
 				<td>{{config.screenNumber}}</td>
 				<td>{{config.screenIdentifier}}</td>
-
+				<td><input type="button" value="Remove"  ng-click="removeScreen(config.screenIdentifier)"/></td>
 			</tr>	
 		</table>         
-    
+    </div>
     
     <br>
+    
     <div align="center" style="font-weight: bold"><button ng-click="showAddConfiguration()" ><b>Add Screens</b></button>   </div>
     
     <div ng-hide="hideAddForm">    
@@ -48,7 +50,7 @@
 	    </form>
     </div>
     
-    </div>
+    
     </form>
 </div>
 

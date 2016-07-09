@@ -26,6 +26,10 @@ public class TrainInfo implements Serializable{
 
 	}
 
+	public TrainInfo() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public String getUri() {
 		return uri;
 	}

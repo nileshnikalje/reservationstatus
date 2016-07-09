@@ -1,110 +1,39 @@
-<!DOCTYPE html>
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<head>
-<style>
-table.maintable  {
-  width: 100%;
-  height : 100%;
-  border: 1px solid grey;
-  border-collapse: collapse;
-  padding: 5px;
-}
 
-table.maintable td  {
-
-  border: 1px solid grey;
-  border-collapse: collapse;
-  padding: 5px;
-}
-
-table.maintable th  {
-  font-weight: bold;
-  border: 1px solid grey;
-  border-collapse: collapse;
-  padding: 5px;
-}
-
-table.maintable tr:nth-child(odd) {
-
-  background-color: #f1f1f1;
-}
-table.maintable tr:nth-child(even) {
-  background-color: #ffffff;
-}
-
-
-table.formtable  {
-  width: 100%;
-  height : 100%;
-
-  border-collapse: collapse;
-  padding: 5px;
-}
-
-
-table.formtable td  {
-
-
-  border-collapse: collapse;
-  padding: 5px;
-}
-
-table.formtable th  {
-
-
-  border-collapse: collapse;
-  padding: 5px;
-}
-
-</style>
-<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
-<link rel="stylesheet" href="js/angular-block-ui.min.css"/>
-<!-- After AngularJS -->
-<script src="js/angular-block-ui.min.js"></script>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-</head>
-<body ng-app="yapp">
 
 <div class="other-page" ng-controller="PlatformConfigController" >
-<h1 style="color:white"> Reservation Charting System - Screen Configuration</h1>
-   <form>
-         <b style="color:white">Select a screen to configure   : </b> 
-        <select ng-model="selectedPlatform" ng-options="x.screenName for x in platforms " ng-change="selectPlatform()">
-        </select>
-    
-
-	<br>
-
-
-    <div ng-model="currentInfo"  ng-hide="hideTrainInfo">
-        <h2 style="color:white">Current Information been displayed on {{selectedPlatform.screenName}}</h2>
-		<table class="maintable">
-			<tr style= "font-weight: bold">
+<h2 style="color:white"> Reservation Charting System - Screen Configuration</h2>
+<h1 style="color:white" ng-hide="hideNoScreenConfigMessage"> No Screens added. Please use the Add/Remove Screens page to add screens</h1>
+	<div ng-hide="hideScreenConfigTable">
+	<table class="maintable">
+			<tr style="font-weight:bold">
+				<td>Screen</td>
 				<td>Train Number</td>
 				<td>Train Name</td>
 				<td>Station</td>
 				<td>Date</td>
 				<td>Class</td>
+				<td>Add/Change Info</td>
+				<td>Remove Info</td>
 			</tr>
-			<tr>
-				<td>{{trainInfo.trainNumber}}</td>
-				<td>{{trainInfo.trainName}}</td>
-				<td>{{trainInfo.stationName}}</td>
-				<td>{{trainInfo.date}}</td>
-				<td>{{trainInfo.journeyClass}}</td>
+			<tr ng-repeat="(key,value) in screenData">
+				<td>{{key}}  </td>
+				<td>{{value.trainNumber}}</td>
+				<td>{{value.trainName}}</td>
+				<td>{{value.stationName}}</td>				
+				<td>{{value.date}}</td>
+				<td>{{value.journeyClass}}</td>
+				<td><input type="button" value="Add/Change Info"  ng-click="showAddForm(key)"/></td>
+				<td><input type="button" value="Remove Info"  ng-click="removeTrainConf(key)"/></td>
 			</tr>	
-		</table>         
-    
-    
-    <br>
-    <div align="center" style="font-weight: bold"><button ng-click="showAddForm()" >Change Info</button>     <button ng-click="removeTrainConf()" >Remove Info</button>   </div>
+		</table>
+	
+	<br>
+	</div>
     
     <div ng-hide="hideAddForm">    
     
     
-    <h3 style="color:white" >Use the form below to update the information on {{selectedPlatform.screenName}}</h3>
+    <h3 style="color:white" >Use the form below to update the information on {{selectedScreenIdentifier}}</h3>
     <form >
 	    <table class="formtable">
 	    	<tr>
@@ -133,13 +62,8 @@ table.formtable th  {
 	    	  </tr>    	  
 	    </table>
 	    
-	    </form>
+	</form>
     </div>
-    
-    </div>
-    </form>
+
 </div>
 
-
-</body>
-</html>
