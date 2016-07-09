@@ -1,0 +1,85 @@
+<div class="other-page" ng-controller="UserAdminController" >
+<h2 style="color:white"> Reservation Charting System - User Administration</h2>
+   <form>
+    <div ng-model="currentInfo"  ng-hide="hideConfigurationInfo">
+        <h1 style="color:white">Configured Users</h1>
+		<table class="maintable">
+			<tr >
+				<b>
+					<td><b>User Name</b></td>
+					<td><b>Change Password</b></td>
+					<td><b>Delete User</b></td>
+				</b>
+
+			</tr>
+			<tr ng-repeat = "users in usersData">
+				<td>{{users.userName}}</td>
+				<td><input type="button" value="Change Password"  ng-click="showChangePasswordForm(users.userName)"/></td>
+				<td><input type="button" value="Delete User"  ng-click="deleteUser(users.userName)"/></td>
+			</tr>	
+		</table>         
+    </div>
+    
+    <br>
+    
+    <div align="center" style="font-weight: bold"><button ng-click="showAddUserForm()" ><b>Add User</b></button>   </div>
+    
+    <div ng-hide="hideAddUserForm">    
+    
+    
+    <h2 style="color:white">Use the form below to add users</h2>
+    <form>
+	    <table class="formtable">
+	    	<tr>
+				<td style="color:white"><b>User Name</b></td>
+	    	   	<td><input type="text"  ng-model="userName" >{{userNameMsg}}</td>
+	    	  </tr>
+	          <tr>
+	          	<td style="color:white"><b>Password</b></td>
+	          	<td><input type="password"  ng-model="newPassword" >{{newPasswordMsg}}</td>
+			  </tr>
+	          <tr>
+	          	<td style="color:white"><b>Confirm Password</b></td>
+	          	<td><input type="password"  ng-model="confirmPassword" >{{confirmPasswordMsg}}</td>
+			  </tr>
+	    	  <tr>
+	    	  	<td><button ng-click="addUser()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
+	    	  	<td> </td>
+	    	  </tr>    	  
+	    </table>
+	    
+	    </form>
+    </div>
+    
+    
+    <div ng-hide="hideChangePasswordForm">    
+    
+    
+    <h2 style="color:white">Use the form below to change password for {{userNameToChange}}</h2>
+    <form>
+	    <table class="formtable">
+	          <tr>
+	          	<td style="color:white"><b>New Password</b></td>
+	          	<td><input type="password"  ng-model="newChangePassword" >{{newPasswordMsg}}</td>
+			  </tr>
+	          <tr>
+	          	<td style="color:white"><b>Confirm New Password</b></td>
+	          	<td><input type="password"  ng-model="confirmChangePassword" >{{confirmPasswordMsg}}</td>
+			  </tr>
+	    	  <tr>
+	    	  	<td><button ng-click="changePassword()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
+	    	  	<td> </td>
+	    	  </tr>    	  
+	    </table>
+	    
+	    </form>
+    </div>    
+    
+    
+    </form>
+</div>
+
+
+
+</body>
+</html>
