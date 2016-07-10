@@ -96,13 +96,29 @@ public class RestService {
 			String line;
 
 			while ((line = reader.readLine()) != null) {
-				System.out.println(line);
-				if (line.substring(42, 44).trim().equals(journeyClass)) {
-					list.add(new ReservationInfo(line.substring(0, 16), line
-							.substring(17, 19), line.substring(16, 17), line
-							.substring(19, 29), line.substring(29, 33), line
-							.substring(33, 37), line.substring(37, 39), line
-							.substring(39, 42), line.substring(42, 44)));
+				//System.out.println(line);
+//				if (line.substring(42, 44).trim().equals(journeyClass)) {
+//					list.add(new ReservationInfo(line.substring(0, 16), line
+//							.substring(17, 19), line.substring(16, 17), line
+//							.substring(19, 29), line.substring(29, 33), line
+//							.substring(33, 37), line.substring(37, 39), line
+//							.substring(39, 42), line.substring(42, 44)));
+//				}				
+				
+				if (line.substring(49, 51).trim().equals(journeyClass)) {
+					list.add(new ReservationInfo(
+							line.substring(6, 21), 
+							line.substring(22, 24), //age
+							line.substring(21, 22), //gender
+							line.substring(24, 34), //pnr
+							line.substring(34, 38), //tostation
+							line.substring(38, 42), //status
+							line.substring(42, 46), //coach
+							line.substring(46, 49), //berth
+							line.substring(49, 51), //class
+							line.substring(2, 6), //wl number
+							line.substring(1, 2)  //booking status
+					));
 				}
 			}
 		} catch (IOException e) {
@@ -110,8 +126,10 @@ public class RestService {
 			e.printStackTrace();
 		}
 
+		Collections.sort(list);
+		
 		String returnVal = new GsonBuilder().create().toJson(list);
-		System.out.println("rturn vale:" + returnVal);
+		//System.out.println("rturn vale:" + returnVal);
 		return returnVal;
 
 	}

@@ -5,6 +5,20 @@
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
 
+		<context-param>
+			<param-name>resteasy.scan</param-name>
+			<param-value>false</param-value>
+		</context-param>
+		<context-param>
+			<param-name>resteasy.scan.providers</param-name>
+			<param-value>false</param-value>
+		</context-param>
+		<context-param>
+			<param-name>resteasy.scan.resources</param-name>
+			<param-value>false</param-value>
+		</context-param>
+
+
 	<servlet>
 		<servlet-name>jersey-servlet</servlet-name>
 		<servlet-class>
@@ -15,23 +29,15 @@
 			<param-value>com.balle.services</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>jersey-servlet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-	
-	<context-param>
-		<param-name>resteasy.scan</param-name>
-		<param-value>false</param-value>
-	</context-param>
-	<context-param>
-		<param-name>resteasy.scan.providers</param-name>
-		<param-value>false</param-value>
-	</context-param>
-	<context-param>
-		<param-name>resteasy.scan.resources</param-name>
-		<param-value>false</param-value>
-	</context-param>
+
+
+
+
 </web-app>
