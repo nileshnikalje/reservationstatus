@@ -239,6 +239,7 @@
 							
 							//$scope.hideTrainInfo = true;
 							$scope.hideAddForm = true;
+							$scope.hideSubmitForm=true;
 
 							
 							if(UserService.getLoggedInUser() == null) {
@@ -335,17 +336,10 @@
 								$scope.classMsg = "";
 								$scope.dateMsg = "";
 
-								if ($scope.trainNumber == undefined
-										|| $scope.trainNumber == "") {
-									console
-											.log("Train Number is mandatory field");
-									$scope.trainNumberMsg = "Train Number is mandatory field";
-									alert("Error occured while processing the data");
-									return;
-								}
 
-								if ($scope.journeyClass == undefined
-										|| $scope.journeyClass == "") {
+
+								if ($scope.selectedJourneyClass == undefined
+										|| $scope.selectedJourneyClass == "") {
 									$scope.classMsg = "Class is mandatory field";
 									alert("Error occured while processing the data");
 									return;
@@ -358,12 +352,7 @@
 									return;
 								}
 
-								if ($scope.journeyDate == undefined
-										|| $scope.journeyDate == "") {
-									$scope.dateMsg = "Date of Journey is mandatory";
-									alert("Error occured while processing the data");
-									return;
-								}
+
 
 								var jsDate = new Date($scope.journeyDate);
 								var dateOfJourney = zeroPadNumber(jsDate
@@ -378,7 +367,7 @@
 										+ "/"
 										+ $scope.trainName
 										+ "/"
-										+ $scope.journeyClass
+										+ $scope.selectedJourneyClass
 										+ "/"
 										+ dateOfJourney
 										+ "/"
@@ -401,6 +390,22 @@
 
 							$scope.getTrainInfoByNumber = function() {
 
+								if ($scope.trainNumber == undefined
+										|| $scope.trainNumber == "") {
+									console
+											.log("Train Number is mandatory field");
+									$scope.trainNumberMsg = "Train Number is mandatory field";
+									alert("Error occured while processing the data");
+									return;
+								}
+								
+								if ($scope.journeyDate == undefined
+										|| $scope.journeyDate == "") {
+									$scope.dateMsg = "Date of Journey is mandatory";
+									alert("Error occured while processing the data");
+									return;
+								}
+								
 								if ($scope.trainNumber != undefined) {
 									var wsUrl = "/reservationstatus/rest/getTrainInfoByNumber/"
 											+ $scope.trainNumber;
@@ -415,28 +420,31 @@
 														$scope.trainNameMsg = "";
 														// blockUI.stop();
 														$scope.trainInfoByNumber = response.data;
+														console.log($scope.trainInfoByNumber);
+														console.log($scope.trainInfoByNumber.trains[0].classes)
 														$scope.trainName = $scope.trainInfoByNumber.trains[0].full_name;
+														$scope.hideSubmitForm=false;
+														
+														$scope.journeyClasses=[];
+														
+//													    for(var j=0; j<journeyClasses.length; j++) {
+//													    	console.log(journeyClasses[j].class-code);
+//													            classesArray.push(journeyClasses[j]."class-code");
+//													    }
+													    
+
+														for ( var i in $scope.trainInfoByNumber.trains[0].classes) {
+															var journeyClass = $scope.trainInfoByNumber.trains[0].classes[i];
+														//	if(journeyClass["available"] == "Y") {
+																$scope.journeyClasses.push(journeyClass["class-code"]);
+														//	}
+														}														
+														
+
 													});
 								}
 							}
 
-							$scope.checkClass = function() {
-								var classFound = false;
-								$scope.classMsg = "";
-								for ( var i in $scope.trainInfoByNumber.trains[0].classes) {
-									var journeyClass = $scope.trainInfoByNumber.trains[0].classes[i];
-									if (journeyClass["class-code"] == $scope.journeyClass) {
-										classFound = true;
-										break;
-									}
-								}
-
-								if (!classFound) {
-									alert("Class entered in not applicable for the selected train");
-									$scope.classMsg = "Class entered is not applicable for the train";
-									return;
-								}
-							}
 
 							function zeroPadNumber(nValue) {
 								if (nValue < 10) {

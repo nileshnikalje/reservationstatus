@@ -38,23 +38,33 @@
 	    <table class="formtable">
 	    	<tr>
 				<td style="color:white">Train Number</td>
-	    	   	<td><input type="text"  ng-model="trainNumber" ng-blur="getTrainInfoByNumber()" >{{trainNumberMsg}}</td>
-	    	  </tr>
-	          <tr>
-	          	<td></td>
-	          	<td><input type="text"  ng-model="trainName" disabled="disabled">{{trainNameMsg}}</td>
-			  </tr>
-			  <tr>	
-			  	<td style="color:white">Class</td>
-			  	<td><input type="text"  ng-model="journeyClass" ng-blur="checkClass()">{{classMsg}}</td>
-	    	  </tr>
-	    	  <tr>	
-	    	  	<td style="color:white">Station</td>
-	    	  	<td><input type="text"  ng-model="stationCode"> {{stationMsg}}</td>
+	    	   	<td><input type="text"  ng-model="trainNumber" ng-blur="" >{{trainNumberMsg}}</td>
 	    	  </tr>
 	    	  <tr>
 	    	  	<td style="color:white">Date</td>
 	    	  	<td><input type="date" ng-model="journeyDate"> {{dateMsg}}</td>
+	    	  </tr>	
+	          <tr>
+	          	<td style="color:white">Train Name</td>
+	          	<td><input type="text"  ng-model="trainName" disabled="disabled">{{trainNameMsg}}</td>
+			  </tr>
+	    	  <tr>
+	    	  	<td><button ng-click="getTrainInfoByNumber()" ng-disabled="disableSubmit"><b>Get Data</b></button></td>
+	    	  	<td> </td>
+	    	  </tr> 
+	 </form>
+	 </div>
+	 
+	 <div ng-hide="hideSubmitForm">
+	 <form>			  
+			  <tr>	
+			  	<td style="color:white">Class</td>
+			  	<td><select ng-model="selectedJourneyClass" ng-options="x for x in journeyClasses"></select></td>
+<!-- 			  	<td><input type="text"  ng-model="journeyClass" ng-blur="checkClass()">{{classMsg}}</td> -->
+ 	    	  </tr>
+	    	  <tr>	
+	    	  	<td style="color:white">Station</td>
+	    	  	<td><input type="text"  ng-model="stationCode"> {{stationMsg}}</td>
 	    	  </tr>
 	    	  <tr>
 	    	  	<td><button ng-click="updateTrainInfo()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
