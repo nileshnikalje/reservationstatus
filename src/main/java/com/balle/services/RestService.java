@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -23,9 +24,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.balle.dao.PlatformInfo;
 import com.balle.dao.ReservationInfo;
 import com.balle.dao.ScreenDetails;
 import com.balle.dao.ScreenDetailsComparator;
+import com.balle.dao.ScreenInfo;
 import com.balle.dao.TrainInfo;
 import com.balle.dao.UserDetails;
 import com.balle.utils.ConfigData;
@@ -39,12 +42,12 @@ public class RestService {
 	Map<String,String> loggedInUsers = new HashMap<>();
 	
 	@GET
-	@Path("/getScreenConfig")
-	public String getScreenConfig() throws IOException {
+	@Path("/getScreenConfig/{platform}")
+	public String getScreenConfig(@PathParam("platform") String platform) throws IOException {
 
-		HashMap<String, TrainInfo> data = new ConfigUtils().getConfigData().trainInfoData;
-
-		String returnVal = new GsonBuilder().create().toJson(data);
+		HashMap<String, PlatformInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+		
+		String returnVal = new GsonBuilder().create().toJson(data.get(platform));
 		System.out.println("rturn vale:" + returnVal);
 		return returnVal;
 
@@ -53,29 +56,57 @@ public class RestService {
 	
 	
 	@GET
-	@Path("/getTrainInfo/{source}")
-	public String getTrainInfo(@PathParam("source") String source) throws IOException {
+	@Path("/getTrainInfo/{platform}/{screen}")
+	public String getTrainInfo(@PathParam("platform") String platform, 
+			@PathParam("screen") String screen) throws IOException {
 
-		System.out.println("Inside rest webservice " + source);
-		TrainInfo ti = null;
-		HashMap<String, TrainInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+		
+		ScreenInfo screenInfo = null;
+		HashMap<String, PlatformInfo> data = new ConfigUtils().getConfigData().trainInfoData;
 
-		if (data != null && data.containsKey(source)) {
-			ti = data.get(source);
+		if (data != null && data.containsKey(platform)) {
+
+			ScreenInfo si = data.get(platform).getScreen(screen);
+			
+			if (si == null) {
+				screenInfo = new ScreenInfo("0","0",null,null,null,null);
+			}
+			else {
+				screenInfo = si;
+			}
+
 		} else {
 
-			ti = new TrainInfo("0", "", "", "", "");
+			screenInfo = new ScreenInfo("0","0",null,null,null,null);
 		}
 
-		ti.setUri("/reservationstatus/rest/getResvInfo/" + ti.getTrainNumber()
-				+ "/" + ti.getJourneyClass() + "/" + ti.getDate() + "/"
-				+ ti.getStationName());
-		String returnVal = new GsonBuilder().create().toJson(ti);
-		System.out.println("rturn vale:" + returnVal);
+		screenInfo.setUri("/reservationstatus/rest/getResvInfo/" + screenInfo.getTrainNumber()
+				+ "/" + screenInfo.getJourneyClass() + "/" + screenInfo.getDate() + "/"
+				+ screenInfo.getStationName());
+		String returnVal = new GsonBuilder().create().toJson(screenInfo);
+		System.out.println("return vale:" + returnVal);
 		return returnVal;
 
 	}
 
+	
+	@GET
+	@Path("/getNumberOfPlatforms")
+	public String getNumberOfPlatforms() throws IOException {
+
+			HashMap<String, PlatformInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+			
+			Set<String> keySet = data.keySet();
+			
+			System.out.println("Number of platforms:" + keySet.size());
+			
+			return keySet.size()+"";
+			
+			
+
+
+	}
+	
 	@GET
 	@Path("/getResvInfo/{trainNumber}/{journeyClass}/{date}/{station}")
 	public String getReservationInfo(
@@ -136,8 +167,9 @@ public class RestService {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/configurePlatform/{source}/{trainNumber}/{trainName}/{journeyClass}/{date}/{station}")
-	public void postData(@PathParam("source") String source,
+	@Path("/configurePlatform/{platform}/{screen}/{trainNumber}/{trainName}/{journeyClass}/{date}/{station}")
+	public void postData(@PathParam("platform") String platform,
+			@PathParam("screen") String screen,
 			@PathParam("trainNumber") String trainNumber,
 			@PathParam("trainName") String trainName,
 			@PathParam("journeyClass") String journeyClass,
@@ -146,11 +178,11 @@ public class RestService {
 
 		ConfigUtils configUtils = new ConfigUtils();
 		ConfigData  configData = configUtils.getConfigData();
-		HashMap<String, TrainInfo> data = configData.trainInfoData;
-		
+		HashMap<String, PlatformInfo> data = configData.trainInfoData;
+		System.out.println("Configuring platform " + platform + " screen " + screen);
 		if (data == null) {
 			System.out.println("Data is null");
-			data = new HashMap<String, TrainInfo>();
+			data = new HashMap<String, PlatformInfo>();
 			configData.trainInfoData = data;
 			configUtils.writeConfigData(configData);
 			
@@ -166,23 +198,38 @@ public class RestService {
 			System.out.println(dateFormatted);
 		}
 
-		if (data.containsKey(source)) {
+		if (data.containsKey(platform)) {
+			PlatformInfo platformInfo = data.get(platform);
+			ScreenInfo screenInfo = platformInfo.getScreen(screen);
+			if(screenInfo == null) {
+				screenInfo = new ScreenInfo();
+			}
 			System.out.println("Data contains Key");
-			TrainInfo ti = data.get(source);
-			ti.setDate(dateFormatted);
-			ti.setJourneyClass(journeyClass);
-			ti.setTrainNumber(trainNumber);
-			ti.setStationName(station);
-			ti.setTrainName(trainName);
-			data.put(source, ti);
+			System.out.println("size before modification " + platformInfo.getScreens().size());
+			screenInfo.setDate(dateFormatted);
+			screenInfo.setJourneyClass(journeyClass);
+			screenInfo.setTrainNumber(trainNumber);
+			screenInfo.setStationName(station);
+			screenInfo.setTrainName(trainName);
+			
+			platformInfo.modifyScreenInfo(screen, screenInfo);
+			System.out.println("size after modification " + platformInfo.getScreens().size());
+			data.put(platform, platformInfo);
 			configData.trainInfoData = data;
 			configUtils.writeConfigData(configData);
+			getScreenConfig(platform);
 			
 		} else {
-			System.out.println("Data does contains Key");
-			TrainInfo ti = new TrainInfo(trainNumber, trainName, journeyClass,
-					dateFormatted, station);
-			data.put(source, ti);
+			System.out.println("Data does not contain Key");
+			PlatformInfo platformInfo = new PlatformInfo();
+
+			platformInfo.setPlatform(platform);
+			
+			ScreenInfo si = new ScreenInfo(screen, trainNumber, trainName, journeyClass, dateFormatted, station);
+			ArrayList<ScreenInfo> screens = new ArrayList<ScreenInfo>();
+			screens.add(si);
+			platformInfo.setScreens(screens);
+			data.put(platform, platformInfo);
 			configData.trainInfoData = data;
 			configUtils.writeConfigData(configData);
 
@@ -192,16 +239,38 @@ public class RestService {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/removePlatformConf/{source}")
-	public void removePlatformConfigurationData(@PathParam("source") String source) throws IOException {
+	@Path("/removePlatformConf/{platform}/{screen}")
+	public void removePlatformConfigurationData(@PathParam("platform") String platform,
+			@PathParam("screen") String screen) throws IOException {
 		ConfigUtils configUtils = new ConfigUtils();
 		ConfigData configData = configUtils.getConfigData();
 		
-		HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
+		HashMap<String, PlatformInfo> trainInfoData = configData.trainInfoData;
 		
-		if (trainInfoData != null && trainInfoData.containsKey(source)) {
-			trainInfoData.put(source, new TrainInfo());
-			//trainInfoData.remove(source);
+		if (trainInfoData != null && trainInfoData.containsKey(platform) ) {
+			PlatformInfo platformInfo = trainInfoData.get(platform);
+			
+			List<ScreenInfo> screens = platformInfo.getScreens();
+			
+			Iterator<ScreenInfo> iter = screens.iterator();
+			
+			while(iter.hasNext()) {
+				ScreenInfo si = iter.next();
+				if(si.getScreen().equals(screen)) {
+					si.setDate(null);
+					si.setJourneyClass(null);
+					si.setScreen(screen);
+					si.setStationName(null);
+					si.setTrainName(null);
+					si.setTrainNumber("0");
+					si.setUri(null);
+					break;
+				}
+				
+			}
+			
+			platformInfo.setScreens(screens);
+
 			configData.trainInfoData = trainInfoData;
 			configUtils.writeConfigData(configData);
 		}
@@ -320,10 +389,10 @@ public class RestService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/addScreen/{platformNumber}/{screenNumber}")
-	public void addScreens(@PathParam("platformNumber") String platformNumber,
-			@PathParam("screenNumber") String screenNumber) throws IOException {
+	public void addScreens(@PathParam("platformNumber") String platform,
+			@PathParam("screenNumber") String screen) throws IOException {
 
-		System.out.println("Adding " + platformNumber + "-" + screenNumber);
+
 
 		ConfigUtils utils = new ConfigUtils();
 		ConfigData configData = utils.getConfigData();
@@ -335,7 +404,7 @@ public class RestService {
 		if (configData.screens == null) {
 			System.out.println("platforms is null");
 			configData.screens = new ArrayList<ScreenDetails>();
-			screenDetails = new ScreenDetails(platformNumber, screenNumber);
+			screenDetails = new ScreenDetails(platform, screen);
 			configData.screens.add(screenDetails);
 		} else {
 			// screens is not a null list
@@ -343,14 +412,14 @@ public class RestService {
 
 			while (i.hasNext()) {
 				ScreenDetails sd =  i.next();
-				if (sd.getPlatformNumber().equals(platformNumber) && sd.getScreenNumber().equals(screenNumber)) {
+				if (sd.getPlatformNumber().equals(platform) && sd.getScreenNumber().equals(screen)) {
 					screenDetails = sd;
 					break;
 				}
 			}
 			
 			if (screenDetails == null) {
-				screenDetails = new  ScreenDetails(platformNumber, screenNumber);
+				screenDetails = new  ScreenDetails(platform, screen);
 				configData.screens.add(screenDetails);
 			}
 			
@@ -360,7 +429,9 @@ public class RestService {
 		}
 		
 		utils.writeConfigData(configData);
-		postData(screenDetails.getScreenIdentifier(), null, null, null, null, null);
+				
+		postData(platform,screen,"0","","",null,"");
+		
 
 	}
 
@@ -368,10 +439,11 @@ public class RestService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/removeScreen/{screenIdentifier}")
-	public void removeScreen(@PathParam("screenIdentifier") String screenIdentifier) throws IOException {
+	@Path("/removeScreen/{platform}/{screen}")
+	public void removeScreen(@PathParam("platform") String platform,
+				@PathParam("screen") String screen) throws IOException {
 
-		System.out.println("removing " + screenIdentifier );
+		System.out.println("removing " + platform + "/" + screen );
 
 		ConfigUtils utils = new ConfigUtils();
 		ConfigData configData = utils.getConfigData();
@@ -386,13 +458,16 @@ public class RestService {
 
 			while (i.hasNext()) {
 				ScreenDetails sd =  i.next();
-				if (sd.getScreenIdentifier().equals(screenIdentifier) ) {
+				if (sd.getPlatformNumber().equals(platform) && sd.getScreenNumber().equals(screen) ) {
+					System.out.println("removing");
 					i.remove();
 					
-					HashMap<String, TrainInfo> trainInfoData = configData.trainInfoData;
+					HashMap<String, PlatformInfo> trainInfoData = configData.trainInfoData;
 					
-					if (trainInfoData != null && trainInfoData.containsKey(screenIdentifier)) {
-						trainInfoData.remove(screenIdentifier);
+					if (trainInfoData != null && trainInfoData.containsKey(platform)) {
+						PlatformInfo platformInfo = trainInfoData.get(platform);
+						platformInfo.removeScreen(screen);
+						trainInfoData.put(platform, platformInfo);
 						configData.trainInfoData = trainInfoData;
 					}					
 					

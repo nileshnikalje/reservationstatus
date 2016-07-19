@@ -7360,9 +7360,9 @@ table.maintable tr:nth-child(even) {
 table.formtable  {
   width: 100%;
   height : 100%;
-
   border-collapse: collapse;
   padding: 5px;
+  
 }
 
 
@@ -7382,6 +7382,68 @@ table.formtable th  {
 
 
 
+table.platformtable  {
+  width: 100%;
+  height : 100%;
+  font-weight: bold;
+  font-color : white;
+  border: 3px solid white;
+
+}
+
+
+table.platformtable td  {
+
+border: 3px solid white;
+  font-align : center;
+  font-color : white;
+  padding: 5px;
+/*   font-size:14pt; */
+}
+
+table.platformtable th  {
+border: 3px solid white;
+
+
+  padding: 5px;
+}
+
+
+
+.section {
+	clear: both;
+	padding: 0px;
+	margin: 0px;
+}
+
+
+.col {
+	display: block;
+	float:left;
+	margin: 1% 0 1% 1.6%;
+}
+.col:first-child { margin-left: 0; }
+
+
+.group:before,
+.group:after { content:""; display:table; }
+.group:after { clear:both;}
+.group { zoom:1; /* For IE 6/7 */ }
+
+
+.span_3_of_3 { width: 100%; }
+.span_2_of_3 { width: 66.13%; }
+.span_1_of_3 { width: 32.26%; }
+
+/*  GO FULL WIDTH BELOW 480 PIXELS */
+@media only screen and (max-width: 480px) {
+	.col {  margin: 1% 0 1% 0%; }
+	.span_3_of_3, .span_2_of_3, .span_1_of_3 { width: 100%; }
+}
+
+
+
 html, body {
 	overflow: hidden
 }
+

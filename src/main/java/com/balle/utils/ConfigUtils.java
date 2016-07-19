@@ -12,6 +12,7 @@ import java.util.HashMap;
 import com.balle.dao.ScreenDetails;
 import com.balle.dao.TrainInfo;
 import com.balle.dao.UserDetails;
+import com.balle.dao.PlatformInfo;
 
 
 public class ConfigUtils {
@@ -83,7 +84,7 @@ public class ConfigUtils {
 		users.add(new UserDetails("admin", "password"));
 		data.users = users;
 		data.screens = new ArrayList<ScreenDetails>();
-		data.trainInfoData = new HashMap<String,TrainInfo>();
+		data.trainInfoData = new HashMap<String, PlatformInfo>();
 		writeConfigData(data);
 		return data;
 	}

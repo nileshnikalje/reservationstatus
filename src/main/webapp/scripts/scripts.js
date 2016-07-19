@@ -242,33 +242,116 @@
 							$scope.hideSubmitForm=true;
 
 							
-							if(UserService.getLoggedInUser() == null) {
-								alert ("User not logged in");
-								return $location.path("/login"), !1
-							}
+//							if(UserService.getLoggedInUser() == null) {
+//								alert ("User not logged in");
+//								return $location.path("/login"), !1
+//							}
 							
-							$scope.getScreenConfig = function() {
-								var wsScreenDataUrl = "/reservationstatus/rest/getScreenConfig";
-								
+							$scope.getScreenConfig = function(platform) {
+								var wsScreenDataUrl = "/reservationstatus/rest/getScreenConfig/" + platform;
+								$scope.platform01screens = []
 								$http.get(wsScreenDataUrl, {
 									timeout : 15000
 								}).then(function(response) {
-									$scope.screenData = response.data;
-									console.log("Screen data length:" + Object.keys($scope.screenData).length)
-									if(Object.keys($scope.screenData).length < 1) {
-										$scope.hideNoScreenConfigMessage = false;
-										$scope.hideScreenConfigTable = true;
+									if (platform == "1") {
+										$scope.platformOneScreens = response.data.screens;
 									}
-									else {
-										$scope.hideNoScreenConfigMessage = true
-										$scope.hideScreenConfigTable = false;
+									if (platform == "2") {
+										$scope.platformTwoScreens = response.data.screens;
 									}
+									if (platform == "3") {
+										$scope.platformThreeScreens = response.data.screens;
+									}
+									if (platform == "4") {
+										$scope.platformFourScreens = response.data.screens;
+									}
+									if (platform == "5") {
+										$scope.platformFiveScreens = response.data.screens;
+									}
+									if (platform == "6") {
+										$scope.platformSixScreens = response.data.screens;
+									}
+									if (platform == "7") {
+										$scope.platformSevenScreens = response.data.screens;
+									}
+									if (platform == "8") {
+										$scope.platformEightScreens = response.data.screens;
+									}
+									if (platform == "9") {
+										$scope.platformNineScreens = response.data.screens;
+									}
+									if (platform == "10") {
+										$scope.platformTenScreens = response.data.screens;
+									}
+									if (platform == "11") {
+										$scope.platformElevenScreens = response.data.screens;
+									}
+									if (platform == "12") {
+										$scope.platformTwelveScreens = response.data.screens;
+									}
+									
+//									console.log($scope.screenData);
+//									console.log("Screen data length:" + Object.keys($scope.screenData).length)
+//									if(Object.keys($scope.screenData).length < 1) {
+//										$scope.hideNoScreenConfigMessage = false;
+//										$scope.hideScreenConfigTable = true;
+//									}
+//									else {
+//										$scope.hideNoScreenConfigMessage = true
+//										$scope.hideScreenConfigTable = false;
+//									}
 									
 
 								});
 							}
 							
-							$scope.getScreenConfig();							
+							getNumberOfPlatforms = function() {
+								var wsScreenDataUrl = "/reservationstatus/rest/getNumberOfPlatforms" ;
+								$http.get(wsScreenDataUrl, {
+									timeout : 15000
+								}).then(function(response) {
+									console.log("number of platforms:" + response.data);
+									$scope.numberOfPlatforms =  response.data;
+								});
+							}
+							
+							getNumberOfPlatforms();
+							console.log($scope.numberOfPlatforms);
+							if ($scope.numberOfPlatforms == undefined || $scope.numberofPlatforms == null) {
+								$scope.hideNoScreenConfigMessage = false;
+								$scope.hidePlatforms = true;
+								console.log("true");
+							}
+							else {
+								$scope.hideNoScreenConfigMessage = true;
+								$scope.hidePlatforms = false;
+								console.log("False");
+							}
+							
+							if ($scope.numberOfPlatforms == "1")
+								$scope.getScreenConfig("1");							
+							if ($scope.numberOfPlatforms == "2")
+								$scope.getScreenConfig("2");							
+							if ($scope.numberOfPlatforms == "3")
+								$scope.getScreenConfig("3");							
+							if ($scope.numberOfPlatforms == "4")
+								$scope.getScreenConfig("4");							
+							if ($scope.numberOfPlatforms == "5")
+								$scope.getScreenConfig("5");							
+							if ($scope.numberOfPlatforms == "6")
+								$scope.getScreenConfig("6");							
+							if ($scope.numberOfPlatforms == "7")
+								$scope.getScreenConfig("7");							
+							if ($scope.numberOfPlatforms == "8")
+								$scope.getScreenConfig("8");							
+							if ($scope.numberOfPlatforms == "9")
+								$scope.getScreenConfig("9");							
+							if ($scope.numberOfPlatforms == "10")
+								$scope.getScreenConfig("10");							
+							if ($scope.numberOfPlatforms == "11")
+								$scope.getScreenConfig("11");							
+							if ($scope.numberOfPlatforms == "12")
+								$scope.getScreenConfig("12");							
 
 							$scope.getPlatformInfo = function() {
 								var wsUrl = "/reservationstatus/rest/getPlatforms";
@@ -475,10 +558,10 @@
 									}
 
 									
-									$scope.removeScreen = function(screenIdentifier) {
+									$scope.removeScreen = function(platform,screen) {
 										var wsAddDataUrl = "/reservationstatus/rest/removeScreen/"
-											+ screenIdentifier;
-
+											+ platform+"/" + screen;
+										console.log(wsAddDataUrl);
 									$http.post(wsAddDataUrl).then(
 											function(response) {
 

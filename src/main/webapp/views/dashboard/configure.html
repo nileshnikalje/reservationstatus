@@ -2,33 +2,222 @@
 
 <div class="other-page" ng-controller="PlatformConfigController" >
 <h2 style="color:white"> Reservation Charting System - Screen Configuration</h2>
-<h1 style="color:white" ng-hide="hideNoScreenConfigMessage"> No Screens added. Please use the Add/Remove Screens page to add screens</h1>
-	<div ng-hide="hideScreenConfigTable">
-	<table class="maintable">
-			<tr style="font-weight:bold">
-				<td>Screen</td>
-				<td>Train Number</td>
-				<td>Train Name</td>
-				<td>Station</td>
-				<td>Date</td>
-				<td>Class</td>
-				<td>Add/Change Info</td>
-				<td>Remove Info</td>
+<h1 style="color:white" ng-hide="hideNoScreenConfigMessage"> No Platform/Screens added. Please use the Add/Remove Screens page to add screens</h1>
+
+
+
+			
+<div class="section group" ng-hide="hidePlatforms">
+	<div id="divPlatform1" class="col span_1_of_3" >
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 1</font></td>
 			</tr>
-			<tr ng-repeat="(key,value) in screenData">
-				<td>{{key}}  </td>
-				<td>{{value.trainNumber}}</td>
-				<td>{{value.trainName}}</td>
-				<td>{{value.stationName}}</td>				
-				<td>{{value.date}}</td>
-				<td>{{value.journeyClass}}</td>
-				<td><input type="button" value="Add/Change Info"  ng-click="showAddForm(key)"/></td>
-				<td><input type="button" value="Remove Info"  ng-click="removeTrainConf(key)"/></td>
-			</tr>	
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformOneScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
 		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 2</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformTwoScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 3</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformThreeScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 4</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformFourScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 5</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformFiveScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 6</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformSixScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 7</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformSevenScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 8</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformEightScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 9</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformNineScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 10</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformTenScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 11</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformElevenScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+	<div class="col span_1_of_3">
+		<table class="platformtable" >
+			<tr>
+				<td colspan="4" align="center" ><font color="white">Platform 12</font></td>
+			</tr>
+			<tr>
+				<td>Screen</td>
+				<td>Train No</td>
+				<td>Class</td>
+			</tr>
+			<tr ng-repeat="x in platformTwelveScreens">
+				<td>{{x.screen}}</td>
+				<td>{{x.trainName}}</td>
+				<td>{{x.journeyClass}}</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+
 	
 	<br>
-	</div>
+
     
     <div ng-hide="hideAddForm">    
     
@@ -60,7 +249,7 @@
 			  <tr>	
 			  	<td style="color:white">Class</td>
 			  	<td><select ng-model="selectedJourneyClass" ng-options="x for x in journeyClasses"></select></td>
-<!-- 			  	<td><input type="text"  ng-model="journeyClass" ng-blur="checkClass()">{{classMsg}}</td> -->
+
  	    	  </tr>
 	    	  <tr>	
 	    	  	<td style="color:white">Station</td>
