@@ -25,6 +25,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.balle.dao.PlatformInfo;
+import com.balle.comms.ComPortSendReceive;
+import com.balle.comms.ReaderWriter;
 import com.balle.dao.ReservationInfo;
 import com.balle.dao.ScreenDetails;
 import com.balle.dao.ScreenDetailsComparator;
@@ -53,6 +55,20 @@ public class RestService {
 
 	}
 	
+	@GET
+	@Path("/getScreens/{platform}")
+	public String getScreensForPlatform(@PathParam("platform") String platform ) throws IOException {
+		
+
+		
+		HashMap<String, PlatformInfo> data = new ConfigUtils().getConfigData().trainInfoData;
+		PlatformInfo platformInfo = data.get(platform);
+		
+		
+		String returnVal = new GsonBuilder().create().toJson(platformInfo.getScreens());
+		System.out.println("Screens List:" + returnVal);
+		return returnVal;
+	}
 	
 	
 	@GET
@@ -89,7 +105,6 @@ public class RestService {
 
 	}
 
-	
 	@GET
 	@Path("/getNumberOfPlatforms")
 	public String getNumberOfPlatforms() throws IOException {
@@ -114,54 +129,70 @@ public class RestService {
 			@PathParam("journeyClass") String journeyClass,
 			@PathParam("date") String date, @PathParam("station") String station) {
 
-		System.out.println("Inside rest webservice");
-
-		// String name, String age, String gender, String pnr,
-		// String toStation, String status, String coach, String berth,
-		// String journeyClass;
-
-		ArrayList<ReservationInfo> list = new ArrayList<>();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new FileInputStream("d:\\resv.txt")))) {
-
-			String line;
-
-			while ((line = reader.readLine()) != null) {
-				//System.out.println(line);
-//				if (line.substring(42, 44).trim().equals(journeyClass)) {
-//					list.add(new ReservationInfo(line.substring(0, 16), line
-//							.substring(17, 19), line.substring(16, 17), line
-//							.substring(19, 29), line.substring(29, 33), line
-//							.substring(33, 37), line.substring(37, 39), line
-//							.substring(39, 42), line.substring(42, 44)));
-//				}				
-				
-				if (line.substring(49, 51).trim().equals(journeyClass)) {
-					list.add(new ReservationInfo(
-							line.substring(6, 21), 
-							line.substring(22, 24), //age
-							line.substring(21, 22), //gender
-							line.substring(24, 34), //pnr
-							line.substring(34, 38), //tostation
-							line.substring(38, 42), //status
-							line.substring(42, 46), //coach
-							line.substring(46, 49), //berth
-							line.substring(49, 51), //class
-							line.substring(2, 6), //wl number
-							line.substring(1, 2)  //booking status
-					));
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+//		System.out.println("Inside rest webservice for getReservationInfo");
+//
+//		// String name, String age, String gender, String pnr,
+//		// String toStation, String status, String coach, String berth,
+//		// String journeyClass;
+//
+//		ArrayList<ReservationInfo> list = new ArrayList<>();
+//		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+//				new FileInputStream("c:\\tmp\\resv.txt")))) {
+//
+//			String line;
+//
+//			while ((line = reader.readLine()) != null) {
+//				//System.out.println(line);
+////				if (line.substring(42, 44).trim().equals(journeyClass)) {
+////					list.add(new ReservationInfo(line.substring(0, 16), line
+////							.substring(17, 19), line.substring(16, 17), line
+////							.substring(19, 29), line.substring(29, 33), line
+////							.substring(33, 37), line.substring(37, 39), line
+////							.substring(39, 42), line.substring(42, 44)));
+////				}				
+//				
+//				if (line.substring(49, 51).trim().equals(journeyClass)) {
+//					list.add(new ReservationInfo(
+//							line.substring(6, 21), 
+//							line.substring(22, 24), //age
+//							line.substring(21, 22), //gender
+//							line.substring(24, 34), //pnr
+//							line.substring(34, 38), //tostation
+//							line.substring(38, 42), //status
+//							line.substring(42, 46), //coach
+//							line.substring(46, 49), //berth
+//							line.substring(49, 51), //class
+//							line.substring(2, 6), //wl number
+//							line.substring(1, 2)  //booking status
+//					));
+//				}
+//			}
+//			
+//			
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//
+//		//Collections.sort(list);
+//		
+//		String returnVal = new GsonBuilder().create().toJson(list);
+		//System.out.println("rturn vale:" + returnVal);
+		
+		System.out.println("Calling serial port comms for " + journeyClass);
+		ComPortSendReceive c = ComPortSendReceive.getInstance();
+		ReaderWriter rw = new ReaderWriter(c, journeyClass);
+		rw.start();
+		try {
+		rw.join();
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
-		Collections.sort(list);
 		
-		String returnVal = new GsonBuilder().create().toJson(list);
-		//System.out.println("rturn vale:" + returnVal);
-		return returnVal;
+		System.out.println("Returning " + c.getResponse());
+		return c.getResponse();
+		//return returnVal;
 
 	}
 
@@ -467,7 +498,13 @@ public class RestService {
 					if (trainInfoData != null && trainInfoData.containsKey(platform)) {
 						PlatformInfo platformInfo = trainInfoData.get(platform);
 						platformInfo.removeScreen(screen);
-						trainInfoData.put(platform, platformInfo);
+						if(platformInfo.getScreens().size() == 0) {
+							System.out.println("last screen removing the entry of platform from the table");
+							trainInfoData.remove(platform);
+						}
+						else {
+							trainInfoData.put(platform, platformInfo);
+						}
 						configData.trainInfoData = trainInfoData;
 					}					
 					

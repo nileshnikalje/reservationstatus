@@ -8,207 +8,290 @@
 
 			
 <div class="section group" ng-hide="hidePlatforms">
-	<div id="divPlatform1" class="col span_1_of_3" ng-hide="hidePlatform1">
+	<div class="col span_1_of_3" ng-hide="hidePlatform1" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 1</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('1')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformOneScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('1',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
+	
 	<div class="col span_1_of_3" ng-hide="hidePlatform2" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 2</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('2')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformTwoScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('2',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform3">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform3" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 3</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('3')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformThreeScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('3',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform4">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform4" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 4</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('4')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformFourScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('4',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform5">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform5" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 5</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('5')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformFiveScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('5',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform6">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform6" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 6</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('6')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformSixScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('6',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform7">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform7" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 7</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('7')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformSevenScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('7',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform8">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform8" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 8</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('8')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformEightScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('8',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform9">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform9" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 9</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('9')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformNineScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('9',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform10">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform10" >
 		<table class="platformtable" >
 			<tr>
-				<td colspan="4" align="center" ><font color="white">Platform 10</font></td>
+				<td colspan="4" align="center" ><font color="white">Platform 1</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('10')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformTenScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('10',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform11">
+	
+	<div class="col span_1_of_3" ng-hide="hidePlatform11" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 11</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('11')"/></td>
+			</tr>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
 			</tr>
 			<tr ng-repeat="x in platformElevenScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('11',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
-	<div class="col span_1_of_3" ng-hide="hidePlatform12">
+
+	<div class="col span_1_of_3" ng-hide="hidePlatform12" >
 		<table class="platformtable" >
 			<tr>
 				<td colspan="4" align="center" ><font color="white">Platform 12</font></td>
 			</tr>
 			<tr>
-				<td>Screen</td>
-				<td>Train No</td>
-				<td>Class</td>
+				<td colspan="4" align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Add/Change Info"  ng-click="showAddForm('12')"/></td>
 			</tr>
-			<tr ng-repeat="x in platformTwelveScreens">
-				<td>{{x.screen}}</td>
-				<td>{{x.trainName}}</td>
-				<td>{{x.journeyClass}}</td>
+			<tr>
+				<td><font color="white">Screen</font></td>
+				<td><font color="white">Train No</font></td>
+				<td><font color="white">Class</font></td>
+				<td><font color="white">Remove</font></td>
+			</tr>
+			<tr ng-repeat="x in platformOneScreens">
+				<td><font color="white">{{x.screen}}</font></td>
+				<td><font color="white">{{x.trainNumber}}</font></td>
+				<td><font color="white">{{x.journeyClass}}</font></td>
+				<td align="center" ><input type="button" class="btn btn-white btn-outline btn-rounded btn-sm" value="Remove"  ng-click="removeTrainConf('12',x.screen)"/></td>
+				
 			</tr>
 		</table>
 	</div>
@@ -251,10 +334,11 @@
 			  	<td><select ng-model="selectedJourneyClass" ng-options="x for x in journeyClasses"></select></td>
 
  	    	  </tr>
-	    	  <tr>	
-	    	  	<td style="color:white">Station</td>
-	    	  	<td><input type="text"  ng-model="stationCode"> {{stationMsg}}</td>
-	    	  </tr>
+			  <tr>	
+			  	<td style="color:white">Screen</td>
+			  	<td><select ng-model="selectedScreen" ng-options="x.screen for x in screensList"></select></td>
+
+ 	    	  </tr>
 	    	  <tr>
 	    	  	<td><button ng-click="updateTrainInfo()" ng-disabled="disableSubmit"><b>Submit</b></button></td>
 	    	  	<td> </td>

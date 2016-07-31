@@ -192,7 +192,7 @@ public class TwoWaySerialComm {
 
 	public static void main(String[] args) {
 		try {
-			(new TwoWaySerialComm()).write("COM1","33 char query");
+			(new TwoWaySerialComm()).write("COM2","33 char query");
 	//		(new TwoWaySerialComm()).read("COM2");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

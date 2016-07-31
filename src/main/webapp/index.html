@@ -96,30 +96,45 @@ app.controller('customersCtrl', function($scope, $http, $location, $timeout) {
 	
 	$scope.platformNumber = this.source.substring(8,10);
 	
-	var data_all, dashBoardPageSize = 19, dashBoardPageTime = 5000, pageCount = 0, timeOutHandler, pageCounter = 0;
+	var data_all, dashBoardPageSize = 5, dashBoardPageTime = 5000, pageCount = 0, timeOutHandler, pageCounter = 0;
 	
 	var wsUrl = "/reservationstatus/rest/getTrainInfo/" + this.source;
+	console.log(wsUrl);
+	
     $http.get(wsUrl)
     .then(function(response) {
     	
     	$scope.trainInfo = response.data; 
-    	
+    	//$scope.dataResponse = null;
 		callResvWS($scope.trainInfo.uri);
    	
     });
     
     function callResvWS(uri) {
-    	$http.get(uri)
-        .then(function(resvResponse) {
-        	
-        	//$scope.resvResponse = resvResponse.data; 
-        	
-        	var responsePageCount = Math.ceil(Object.keys(resvResponse.data).length/dashBoardPageSize);
+    	console.log("inside callresvws")
+    	if ($scope.dataResponse == undefined) {
+    		console.log("undefined")
+	    	$http.get(uri)
+	        .then(function(resvResponse) {
+	        	
+	        	$scope.dataResponse = resvResponse.data; 
+	        	 console.log("set dataresponse");
+	         	var responsePageCount = Math.ceil(Object.keys($scope.dataResponse).length/dashBoardPageSize);
+	        	$scope.totalNumberOfPages = responsePageCount;
+	        	console.log("calling processResponse");
+	    		processResponse($scope.dataResponse,responsePageCount)  	        	 
+	
+	        	
+	        });
+    	}
+    	else {
+         	var responsePageCount = Math.ceil(Object.keys($scope.dataResponse).length/dashBoardPageSize);
         	$scope.totalNumberOfPages = responsePageCount;
-        	
-			processResponse(resvResponse.data,responsePageCount)
-        	
-        });
+        	console.log("calling processResponse");
+    		processResponse($scope.dataResponse,responsePageCount)  
+    	}
+    	
+  	
     }
     
     function processResponse(responseData, responsePageCount) {

@@ -64,7 +64,7 @@
 						} ]),
 						angular.module("yapp").service("UserService", function($http) {
 							var loggedInUser;
-							var numberOfPlatforms;
+//							var numberOfPlatforms;
 							return {
 								getLoggedInUser : function () {
 									return loggedInUser;
@@ -72,24 +72,25 @@
 							
 								setLoggedInUser : function (userName) {
 									loggedInUser = userName;
-								},
-								
-								getNumberOfPlatforms : function () {
-									return numberOfPlatforms;
-								},	
-								
-								setNumberOfPlatforms : function() {
-									var wsScreenDataUrl = "/reservationstatus/rest/getNumberOfPlatforms" ;
-									$http.get(wsScreenDataUrl, {
-										timeout : 15000
-									}).then(function(response) {
-										numberOfPlatforms = response.data;
-
-										console.log("number of platforms:" + numberOfPlatforms);
-										
-									});
-									
 								}
+//								,
+//								
+//								getNumberOfPlatforms : function () {
+//									return numberOfPlatforms;
+//								}
+//								,	
+//									setNumberOfPlatforms : function() {
+//									var wsScreenDataUrl = "/reservationstatus/rest/getNumberOfPlatforms" ;
+//									$http.get(wsScreenDataUrl, {
+//										timeout : 15000
+//									}).then(function(response) {
+//										numberOfPlatforms = response.data;
+//
+//										console.log("number of platforms:" + numberOfPlatforms);
+//										
+//									});
+//									
+//								}
 							}
 						}),
 						angular
@@ -136,7 +137,7 @@
 															}
 															u.setLoggedInUser(r.userName);
 															r.loggedInUser = r.userName;
-															u.setNumberOfPlatforms();
+															//u.setNumberOfPlatforms();
 
 															return s.path("/dashboard"), !1
 														});
@@ -278,12 +279,12 @@
 //								return $location.path("/login"), !1
 //							}
 							
-							$scope.numberOfPlatforms = UserService.getNumberOfPlatforms();
+//							$scope.numberOfPlatforms = UserService.getNumberOfPlatforms();
 							
 							$scope.getScreenConfig = function(platform) {
 								var wsScreenDataUrl = "/reservationstatus/rest/getScreenConfig/" + platform;
-								console.log("calling " + wsScreenDataUrl)
-								$scope.platform01screens = []
+								console.log("calling " + wsScreenDataUrl);
+								
 								$http.get(wsScreenDataUrl, {
 									timeout : 15000
 								}).then(function(response) {
@@ -292,7 +293,13 @@
 
 									}
 									if (platform == "2") {
-										$scope.platformTwoScreens = response.data.screens;
+										if(response.data == null) {
+											hidePlatform2 = true;
+										}
+										else {
+											hidePlatform2 = false;
+											$scope.platformTwoScreens = response.data.screens;
+										}
 
 									}
 									if (platform == "3") {
@@ -349,87 +356,107 @@
 									
 
 								});
-							}
+							};
 							
 
-							
-							
-							console.log($scope.numberOfPlatforms);
-							if ($scope.numberOfPlatforms == undefined || $scope.numberOfPlatforms == null) {
-								$scope.hideNoScreenConfigMessage = false;
-								$scope.hidePlatforms = true;
-								console.log("true");
-							}
-							else {
-								$scope.hideNoScreenConfigMessage = true;
-								$scope.hidePlatforms = false;
-								console.log("False");
-							}
-							
-							if ($scope.numberOfPlatforms == "1") {
-								$scope.getScreenConfig("1");
-								$scope.hidePlatform1 = false;
-							}
-							if ($scope.numberOfPlatforms == "2") {
-								$scope.getScreenConfig("2");
-								$scope.hidePlatform2 = false;
-								console.log("2");
-							}
-							if ($scope.numberOfPlatforms == "3") {
-								$scope.getScreenConfig("3");
-								$scope.hidePlatform3 = false;
-								console.log("3");
-							}
-							if ($scope.numberOfPlatforms == "4") {
-								$scope.getScreenConfig("4");
-								$scope.hidePlatform4 = false;
-							}
-							if ($scope.numberOfPlatforms == "5") {
-								$scope.getScreenConfig("5");
-								$scope.hidePlatform5 = false;
-							}
-							if ($scope.numberOfPlatforms == "6") {
-								$scope.getScreenConfig("6");
-								$scope.hidePlatform6 = false;
-							}
-							if ($scope.numberOfPlatforms == "7") {
-								$scope.getScreenConfig("7");
-								$scope.hidePlatform7 = false;
-							}
-							if ($scope.numberOfPlatforms == "8") {
-								$scope.getScreenConfig("8");
-								$scope.hidePlatform8 = false;
-							}
-							if ($scope.numberOfPlatforms == "9") {
-								$scope.getScreenConfig("9");
-								$scope.hidePlatform9 = false;
-							}
-							if ($scope.numberOfPlatforms == "10") {
-								$scope.getScreenConfig("10");
-								$scope.hidePlatform10 = false;
-							}
-							if ($scope.numberOfPlatforms == "11") {
-								$scope.getScreenConfig("11");
-								$scope.hidePlatform11 = false;
-							}
-							if ($scope.numberOfPlatforms == "12") {
-								$scope.getScreenConfig("12");
-								$scope.hidePlatform12 = false;
-							}
 
-							$scope.getPlatformInfo = function() {
-								var wsUrl = "/reservationstatus/rest/getPlatforms";
-
-								// blockUI.start();
-								$http.get(wsUrl, {
+							$scope.getPlatformConfigurations = function () {
+								
+								
+								console.log($scope.numberOfPlatforms);
+								if ($scope.numberOfPlatforms == undefined || $scope.numberOfPlatforms == null) {
+									$scope.hideNoScreenConfigMessage = false;
+									$scope.hidePlatforms = true;
+									console.log("true");
+								}
+								else {
+									$scope.hideNoScreenConfigMessage = true;
+									$scope.hidePlatforms = false;
+									console.log("False");
+								}
+								
+								if ($scope.numberOfPlatforms >= "1") {
+									$scope.getScreenConfig("1");
+									$scope.hidePlatform1 = false;
+								}
+								if ($scope.numberOfPlatforms >= "2") {
+									$scope.getScreenConfig("2");
+									$scope.hidePlatform2 = false;
+									console.log("2");
+								}
+								if ($scope.numberOfPlatforms >= "3") {
+									$scope.getScreenConfig("3");
+									$scope.hidePlatform3 = false;
+									console.log("3");
+								}
+								if ($scope.numberOfPlatforms >= "4") {
+									$scope.getScreenConfig("4");
+									$scope.hidePlatform4 = false;
+								}
+								if ($scope.numberOfPlatforms >= "5") {
+									$scope.getScreenConfig("5");
+									$scope.hidePlatform5 = false;
+								}
+								if ($scope.numberOfPlatforms >= "6") {
+									$scope.getScreenConfig("6");
+									$scope.hidePlatform6 = false;
+								}
+								if ($scope.numberOfPlatforms >= "7") {
+									$scope.getScreenConfig("7");
+									$scope.hidePlatform7 = false;
+								}
+								if ($scope.numberOfPlatforms >= "8") {
+									$scope.getScreenConfig("8");
+									$scope.hidePlatform8 = false;
+								}
+								if ($scope.numberOfPlatforms >= "9") {
+									$scope.getScreenConfig("9");
+									$scope.hidePlatform9 = false;
+								}
+								if ($scope.numberOfPlatforms >= "10") {
+									$scope.getScreenConfig("10");
+									$scope.hidePlatform10 = false;
+								}
+								if ($scope.numberOfPlatforms >= "11") {
+									$scope.getScreenConfig("11");
+									$scope.hidePlatform11 = false;
+								}
+								if ($scope.numberOfPlatforms >= "12") {
+									$scope.getScreenConfig("12");
+									$scope.hidePlatform12 = false;
+								}
+							}
+							
+							$scope.getNumberOfPlatforms = function() {
+								var wsScreenDataUrl = "/reservationstatus/rest/getNumberOfPlatforms" ;
+								$http.get(wsScreenDataUrl, {
 									timeout : 15000
 								}).then(function(response) {
-									$scope.platforms = response.data;
-
+									$scope.numberOfPlatforms = response.data;
+									$scope.getPlatformConfigurations();
+									console.log("number of platforms:" + $scope.numberOfPlatforms);
+									
 								});
-							};
-
-							$scope.getPlatformInfo();
+								
+							}
+							
+							$scope.getNumberOfPlatforms();							
+							
+							
+							
+//							$scope.getPlatformInfo = function() {
+//								var wsUrl = "/reservationstatus/rest/getPlatforms";
+//
+//								// blockUI.start();
+//								$http.get(wsUrl, {
+//									timeout : 15000
+//								}).then(function(response) {
+//									$scope.platforms = response.data;
+//
+//								});
+//							};
+//
+//							$scope.getPlatformInfo();
 
 //							$scope.selectPlatform = function() {
 //								$scope.getTrainInfo();
@@ -450,8 +477,9 @@
 //							};
 
 							$scope.showAddForm = function(screenIdentifier) {
+								console.log("identifier:" + screenIdentifier)
 								
-								$scope.selectedScreenIdentifier = screenIdentifier;
+								$scope.selectedPlatform = screenIdentifier;
 								$scope.hideAddForm = false;
 								$scope.trainNumber = "";
 								$scope.trainName = "";
@@ -461,10 +489,10 @@
 
 							};
 
-							$scope.removeTrainConf = function(screenIdentifier) {
+							$scope.removeTrainConf = function(platform, screen) {
 
 								var wsAddDataUrl = "/reservationstatus/rest/removePlatformConf/"
-										+ screenIdentifier;
+										+ platform + "/" + screen;
 
 								$http.post(wsAddDataUrl).then(
 										function(response) {
@@ -472,7 +500,7 @@
 											alert("Data removed successfully");
 											$scope.hideAddForm = true;
 											//$scope.getTrainInfo();
-											$scope.getScreenConfig();
+											$scope.getScreenConfig(platform);
 										});
 							}
 
@@ -492,12 +520,19 @@
 									return;
 								}
 
-								if ($scope.stationCode == undefined
-										|| $scope.stationCode == "") {
-									$scope.stationMsg = "Station Code is mandatory field";
+								if ($scope.selectedScreen == undefined
+										|| $scope.selectedScreen == "") {
+									$scope.classMsg = "Screen is mandatory field";
 									alert("Error occured while processing the data");
 									return;
 								}
+
+//								if ($scope.stationCode == undefined
+//										|| $scope.stationCode == "") {
+//									$scope.stationMsg = "Station Code is mandatory field";
+//									alert("Error occured while processing the data");
+//									return;
+//								}
 
 
 
@@ -508,7 +543,9 @@
 										+ zeroPadNumber((jsDate.getMonth() + 1))
 										+ "-" + jsDate.getFullYear();
 								var wsAddDataUrl = "/reservationstatus/rest/configurePlatform/"
-										+ $scope.selectedScreenIdentifier
+										+ $scope.selectedPlatform
+										+ "/"
+										+ $scope.selectedScreen.screen
 										+ "/"
 										+ $scope.trainNumber
 										+ "/"
@@ -517,8 +554,8 @@
 										+ $scope.selectedJourneyClass
 										+ "/"
 										+ dateOfJourney
-										+ "/"
-										+ $scope.stationCode;
+										+ "/BPL";
+//										+ $scope.stationCode;
 								
 								
 								
@@ -528,7 +565,7 @@
 											alert("Data added successfully");
 											$scope.hideAddForm = true;
 											//$scope.getTrainInfo();
-											$scope.getScreenConfig();
+											$scope.getScreenConfig($scope.selectedPlatform);
 											//$scope.selectedPlatform=null;
 											//$scope.hideTrainInfo = true;
 										});
@@ -585,7 +622,16 @@
 														//	if(journeyClass["available"] == "Y") {
 																$scope.journeyClasses.push(journeyClass["class-code"]);
 														//	}
-														}														
+														}	
+														
+														wsUrl = "/reservationstatus/rest/getScreens/" + $scope.selectedPlatform;
+														$http.get(wsUrl)
+														.then ( function (response) {
+															
+															$scope.screensList = response.data;
+															console.log("Screens:" + $scope.screensList);
+															
+														});
 														
 
 													});

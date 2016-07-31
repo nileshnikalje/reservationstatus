@@ -21,11 +21,12 @@ public class ComPortSendReceive {
 
     private SerialPort serialPort;
     private static boolean    portBusy;
-    private String response;
+    private StringBuffer response;
     private static ComPortSendReceive comPortSendReceive = null;
+    private String query;
     
     public String getResponse() {
-		return this.response;
+		return this.response.toString();
 	}
 
 	public static ComPortSendReceive getInstance() {
@@ -39,7 +40,7 @@ public class ComPortSendReceive {
      * @param args the command line arguments
      */
     public synchronized void writeAndRead(String query) {
-//        String[] portNames = SerialPortList.getPortNames();
+        String[] portNames = SerialPortList.getPortNames();
 //        
 //        if (portNames.length == 0) {
 //            System.out.println("There are no serial-ports :( You can use an emulator, such ad VSPE, to create a virtual serial port.");
@@ -53,14 +54,37 @@ public class ComPortSendReceive {
 //            return ;
 //        }
 //        
-//        // port selection
-//        System.out.println("Available com-ports:");
-//        for (int i = 0; i < portNames.length; i++){
-//            System.out.println(portNames[i]);
+        // port selection
+        System.out.println("Available com-ports:");
+        for (int i = 0; i < portNames.length; i++){
+            System.out.println(portNames[i]);
+        }
+        
+        String queryToBeSent = 
+        		//"" + // Character.toString((char) (1)) +
+        		(char) 1 + 
+				"001" +
+				"1846" +
+				"Q023" +
+				"0015" +
+				(char) 2 + //"2" + //Character.toString((char) (2)) +
+				"12138" +
+				"2507" +
+				"HBJ " + 
+				"2A" + 
+				(char) 3 //"3" //Character.toString((char) (3)) 
+				; 
+        
+        System.out.println("Sending query on COM11 :" + queryToBeSent);
+        
+//        
+//        if (1+2 ==3) {
+//        	return ;
 //        }
 //        System.out.println("Type port name, which you want to use, and press Enter...");
 //        Scanner in = new Scanner(System.in);
-        String portName = "COM3";
+        String portName = "COM12";
+        this.query = query;
         
         System.out.println("Waiting for busy port - " + query);
         
@@ -77,6 +101,7 @@ public class ComPortSendReceive {
 
         portBusy = true;
         System.out.println("Acquired port now- " + query);
+        response = new StringBuffer();
         // writing to port
         serialPort = new SerialPort(portName);
         try {
@@ -89,30 +114,42 @@ public class ComPortSendReceive {
                                  SerialPort.PARITY_NONE);
             
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN | 
-                                          SerialPort.FLOWCONTROL_RTSCTS_OUT);
+                    SerialPort.FLOWCONTROL_RTSCTS_OUT);
+//            
+//            serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_XONXOFF_IN | 
+//                                          SerialPort.FLOWCONTROL_XONXOFF_OUT);
             
-          //  serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
+            serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
             // writing string to port
-            serialPort.writeString("Hurrah!!!");
+            System.out.println("Writing data to port");
+            
+
+            
+            System.out.println("Sending query on COM11 :" + queryToBeSent);
+            serialPort.writeString(queryToBeSent);
+            					
+            					
+            		
             
             System.out.println("String wrote to port, waiting for response..");
-            response = getData(query);
+
         }
         catch (SerialPortException ex) {
             System.out.println("Error in writing data to port: " + ex);
         }
     }
     
-    public synchronized String getData(String query) {
+    public String getData(String query) {
     	System.out.println("Getting response ...");
     	ArrayList<ReservationInfo> list = new ArrayList<>();
     	try {
     		System.out.println("Sleeping for 15 seconds for " + query);
 			Thread.sleep(15000);
+			System.out.println("awake after 15 secs");
 			String journeyClass = query;
 			
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-					new FileInputStream("c:\\tmp\\resv.txt")))) {
+					new FileInputStream("d:\\resv.txt")))) {
 
 				String line;
 
@@ -127,20 +164,20 @@ public class ComPortSendReceive {
 //					}				
 					
 					if (line.substring(49, 51).trim().equals(journeyClass)) {
-						list.add(new ReservationInfo(
-								line.substring(6, 21), 
-								line.substring(22, 24), //age
-								line.substring(21, 22), //gender
-								line.substring(24, 34), //pnr
-								line.substring(34, 38), //tostation
-								line.substring(38, 42), //status
-								line.substring(42, 46), //coach
-								line.substring(46, 49), //berth
-								line.substring(49, 51), //class
-								line.substring(2, 6), //wl number
-								line.substring(1, 2)  //booking status
-						));
-					}
+					list.add(new ReservationInfo(
+							line.substring(6, 21), 
+							line.substring(22, 24), //age
+							line.substring(21, 22), //gender
+							line.substring(24, 34), //pnr
+							line.substring(34, 38), //tostation
+							line.substring(38, 42), //status
+							line.substring(42, 46), //coach
+							line.substring(46, 49), //berth
+							line.substring(49, 51), //class
+							line.substring(2, 6), //wl number
+							line.substring(1, 2)  //booking status
+					));
+				}
 				}
 				
 				
@@ -156,18 +193,13 @@ public class ComPortSendReceive {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	System.out.println("Retruning response");
     	
-    	try {
-			serialPort.closePort();
-		} catch (SerialPortException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     	
-    	portBusy = false;
-    	System.out.println("freed port now - " + query);
-    	return (new GsonBuilder().create().toJson(list));
+    	String returnVal = new GsonBuilder().create().toJson(list);
+    	
+    	System.out.println("Retruning response : " + returnVal);
+
+    	return returnVal;
     }
     
     
@@ -182,7 +214,17 @@ public class ComPortSendReceive {
                 try {
                     // receive a response from the port
                     String receivedData = serialPort.readString(event.getEventValue());
-                    System.out.println("Received response from port: " + receivedData);
+                    response.append(receivedData);
+                    System.out.print("Received response from port: " + receivedData);
+                    if(receivedData.equals(Character.toString((char) (3)))) {
+                    	System.out.println("Closing port now. Data returned:" + response.toString());
+
+                    //	response = new StringBuffer(getData(query));
+                    	serialPort.closePort();
+                    	System.out.println("freed port now - " + query);
+                    	portBusy = false;
+//                    	serialPort.notify();
+                    } 
                 }
                 catch (SerialPortException ex) {
                     System.out.println("Error in receiving response from port: " + ex);

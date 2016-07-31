@@ -7392,9 +7392,17 @@ table.platformtable  {
 }
 
 
+table.platformtable tr  {
+
+
+  font-color : white;
+
+/*   font-size:14pt; */
+}
+
 table.platformtable td  {
 
-border: 3px solid white;
+  border: 3px solid white;
   font-align : center;
   font-color : white;
   padding: 5px;
@@ -7402,7 +7410,8 @@ border: 3px solid white;
 }
 
 table.platformtable th  {
-border: 3px solid white;
+	border: 3px solid white;
+	font-color : white;
 
 
   padding: 5px;
