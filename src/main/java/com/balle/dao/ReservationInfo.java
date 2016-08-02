@@ -1,7 +1,6 @@
 package com.balle.dao;
 
-
-public class ReservationInfo implements Comparable<ReservationInfo>{
+public class ReservationInfo implements Comparable<ReservationInfo> {
 	String name;
 	String age;
 	String gender;
@@ -13,6 +12,15 @@ public class ReservationInfo implements Comparable<ReservationInfo>{
 	String journeyClass;
 	String waitListNumber;
 	String bookingStatus;
+	String hindiName;
+
+	public String getHindiName() {
+		return hindiName;
+	}
+
+	public void setHindiName(String hindiName) {
+		this.hindiName = hindiName;
+	}
 
 	public String getWaitListNumber() {
 		return waitListNumber;
@@ -30,9 +38,8 @@ public class ReservationInfo implements Comparable<ReservationInfo>{
 		this.bookingStatus = bookingStatus;
 	}
 
-	public ReservationInfo(String name, String age, String gender, String pnr,
-			String toStation, String status, String coach, String berth,
-			String journeyClass) {
+	public ReservationInfo(String name, String age, String gender, String pnr, String toStation, String status,
+			String coach, String berth, String journeyClass) {
 		super();
 		this.name = name;
 		this.age = age;
@@ -45,11 +52,10 @@ public class ReservationInfo implements Comparable<ReservationInfo>{
 		this.journeyClass = journeyClass;
 	}
 
-	public ReservationInfo(String name, String age, String gender, String pnr,
-			String toStation, String status, String coach, String berth,
-			String journeyClass, String waitListNumber, String bookingStatus) {
+	public ReservationInfo(String name, String age, String gender, String pnr, String toStation, String status,
+			String coach, String berth, String journeyClass, String waitListNumber, String bookingStatus, String hindiName) {
 		super();
-		this.name = name;
+		this.name = name.trim();
 		this.age = age;
 		this.gender = gender;
 		this.pnr = pnr;
@@ -65,6 +71,7 @@ public class ReservationInfo implements Comparable<ReservationInfo>{
 			this.bookingStatus = "RAC";
 		}
 		this.waitListNumber = waitListNumber.trim();
+		this.hindiName = hindiName.trim();
 	}
 
 	public String getName() {
@@ -142,20 +149,19 @@ public class ReservationInfo implements Comparable<ReservationInfo>{
 	@Override
 	public int compareTo(ReservationInfo o) {
 		// TODO Auto-generated method stub
-		
+
 		if (this.bookingStatus.compareTo(o.bookingStatus) == 0) {
-			
+
 			if (Integer.parseInt(this.waitListNumber) > Integer.parseInt(o.waitListNumber)) {
 				return 1;
 			}
 			if (Integer.parseInt(this.waitListNumber) < Integer.parseInt(o.waitListNumber)) {
 				return -1;
-			}
-			else {
+			} else {
 				return 0;
 			}
 		}
-		
+
 		return (this.bookingStatus.compareTo(o.bookingStatus));
 	}
 

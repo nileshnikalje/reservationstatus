@@ -13,7 +13,7 @@ public class Train {
 	@SerializedName("full_name")
 	public String fullName;
 	public List<Day> days = new ArrayList<Day>();
-	public List<Class> classes = new ArrayList<Class>();
+	public List<JourneyClass> classes = new ArrayList<JourneyClass>();
 	public String pantry;
 	public List<Object> route = new ArrayList<Object>();
 

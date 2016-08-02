@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ import com.balle.dao.TrainInfo;
 import com.balle.dao.UserDetails;
 import com.balle.utils.ConfigData;
 import com.balle.utils.ConfigUtils;
+import com.balle.utils.ReservationConstants;
 import com.google.gson.GsonBuilder;
 
 @Path("/")
@@ -180,9 +182,26 @@ public class RestService {
 //		String returnVal = new GsonBuilder().create().toJson(list);
 		//System.out.println("rturn vale:" + returnVal);
 		
-		System.out.println("Calling serial port comms for " + journeyClass);
+		StringBuffer query = new StringBuffer();
+		
+		query.append(ReservationConstants.SOH);
+		query.append("001");
+		query.append(String.format("%2s","" + LocalTime.now().getHour()).replace(' ', '0'));
+		query.append(String.format("%2s","" + LocalTime.now().getMinute()).replace(' ', '0'));
+		query.append("Q024");
+		query.append("0015");
+		query.append(ReservationConstants.SOT);
+		query.append(trainNumber);
+		query.append(date.substring(0,2) + date.substring(3,5));
+		query.append(ReservationConstants.STATION_CODE_PADDED);
+		query.append(journeyClass);
+		query.append("P");
+		query.append(ReservationConstants.EOT);
+		
+		
+		System.out.println("Calling serial port comms for Q024 with query :" + query.toString());
 		ComPortSendReceive c = ComPortSendReceive.getInstance();
-		ReaderWriter rw = new ReaderWriter(c, journeyClass);
+		ReaderWriter rw = new ReaderWriter(c, query.toString());
 		rw.start();
 		try {
 		rw.join();
@@ -190,9 +209,48 @@ public class RestService {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Returning " + c.getResponse());
-		return c.getResponse();
-		//return returnVal;
+		String queryResponse = c.getResponse().toString();
+		System.out.println("Returning " + queryResponse);
+		
+		ArrayList<ReservationInfo> list = new ArrayList<> ();
+		
+		
+		String noOfResponsePackets = queryResponse.substring(25,27);
+		int noOfPackets = Integer.parseInt(noOfResponsePackets);
+		
+		int currentPointer = 0;
+		for (int i=0; i< noOfPackets; i++) {
+			String responseLength = queryResponse.substring(currentPointer + 29,currentPointer + 32);
+			int numberOfRecords = Integer.parseInt(responseLength)/19;
+			
+			for (int k = 0; k < numberOfRecords; k ++) {
+				String passengerRecord = queryResponse.substring(currentPointer + 34 + k*68,   currentPointer + 34 + k*68 + 68);
+				
+				list.add(new ReservationInfo(
+						passengerRecord.substring(8, 23), //name
+						passengerRecord.substring(24, 26), //age
+						passengerRecord.substring(23, 24), //gender
+						passengerRecord.substring(26, 36), //pnr
+						passengerRecord.substring(36, 40), //tostation
+						passengerRecord.substring(38, 42), //status
+						passengerRecord.substring(40, 44), //coach
+						passengerRecord.substring(44, 47), //berth
+						passengerRecord.substring(47, 49), //class
+						passengerRecord.substring(1, 5), //wl number
+						passengerRecord.substring(0, 1) , //booking status
+						passengerRecord.substring(49,68) // hindi name
+				));
+				
+			}
+			
+			currentPointer = currentPointer + 35 + numberOfRecords*68;
+			
+		}
+		
+		
+		String returnVal = new GsonBuilder().create().toJson(list);
+		
+		return returnVal;
 
 	}
 
