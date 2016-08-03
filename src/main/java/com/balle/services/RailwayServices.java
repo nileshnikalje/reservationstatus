@@ -64,60 +64,62 @@ public class RailwayServices {
 		
 		StringBuffer response = c.getResponse();
 //		StringBuffer response = new StringBuffer("A0001230S0190046B1299621091A2AFC3ACC    1200421091A2AFC3ACC    C");
-		
-		String noOfTrainsInResponse = response.substring(12,16);
-		
-		int noOfTrains = Integer.parseInt(noOfTrainsInResponse)/23;
-		
 		TrainInfoResponse tr = new TrainInfoResponse();
+		if (response.length() > 0) {
 		
-		if (noOfTrains > 0) {
-			tr.responseCode = 200;
+			String noOfTrainsInResponse = response.substring(12,16);
 			
-			for (int i = 0; i< noOfTrains; i++) {
-				int startIndex = 17+(23*i);
-				int endIndex = 17+(23*i)+23;
-				String trainInfo = response.substring(startIndex, endIndex );
-				String trainNumberInResponse = trainInfo.substring(0,5);
-	
+			int noOfTrains = Integer.parseInt(noOfTrainsInResponse)/23;
+			
+			
+			
+			if (noOfTrains > 0) {
+				tr.responseCode = 200;
 				
-				if(trainNumberInResponse.equals(trainNumber)) {
-					Train train = new Train();
-					train.number = trainNumber;
-					train.name = "";
+				for (int i = 0; i< noOfTrains; i++) {
+					int startIndex = 17+(23*i);
+					int endIndex = 17+(23*i)+23;
+					String trainInfo = response.substring(startIndex, endIndex );
+					String trainNumberInResponse = trainInfo.substring(0,5);
+		
 					
-					
-					String classesString = trainInfo.substring(9);
-					
-					if(classesString.length() > 1) {
+					if(trainNumberInResponse.equals(trainNumber)) {
+						Train train = new Train();
+						train.number = trainNumber;
+						train.name = "";
 						
-						for (int k = 0; k < classesString.length(); k=k+2) {
-							String classCode = classesString.substring(k, k+2);
-							if (classCode.trim().length() > 0) {
-								JourneyClass jc = new JourneyClass();
-								jc.classCode = classesString.substring(k, k+2);
-								train.classes.add(jc);
+						
+						String classesString = trainInfo.substring(9);
+						
+						if(classesString.length() > 1) {
+							
+							for (int k = 0; k < classesString.length(); k=k+2) {
+								String classCode = classesString.substring(k, k+2);
+								if (classCode.trim().length() > 0) {
+									JourneyClass jc = new JourneyClass();
+									jc.classCode = classesString.substring(k, k+2);
+									train.classes.add(jc);
+								}
+								
+								
 							}
-							
-							
 						}
+						
+						tr.trains.add(train);
 					}
 					
-					tr.trains.add(train);
 				}
 				
-			}
+				if (tr.trains.size() < 1) {
+					tr.responseCode = 0;
+				}
 			
-			if (tr.trains.size() < 1) {
+			}
+			else {
 				tr.responseCode = 0;
 			}
 		
 		}
-		else {
-			tr.responseCode = 0;
-		}
-		
-		
 		//return (new Gson().toJson(tr));
 		
 		
@@ -176,6 +178,28 @@ public class RailwayServices {
 //
 //		System.out.println(trainInfoResponse);
 //		
+		tr = new TrainInfoResponse();
+		tr.responseCode = 200;
+		Train t = new Train();
+		t.name = "EXPRESS";
+		t.fullName = "EXPRESS";
+		t.number = trainNumber;
+		for(int i = 0; i< 3; i++) {
+		
+			JourneyClass cl = new JourneyClass();
+			if(i==0) {
+				cl.classCode = "2A";
+			}
+			if(i==1) {
+				cl.classCode = "1A";
+			}
+			if(i==2) {
+				cl.classCode = "SL";
+			}
+			t.classes.add(cl);
+			
+		}
+		tr.trains.add(t);
 		
 		trainInfoResponse = new Gson().toJson(tr);
 		System.out.println("New Response :" + trainInfoResponse);

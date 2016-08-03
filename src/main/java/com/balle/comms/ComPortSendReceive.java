@@ -61,6 +61,12 @@ public class ComPortSendReceive {
             System.out.println(portNames[i]);
         }
         
+        response = new StringBuffer();
+        
+        if(portNames.length <= 0) {
+        	return;
+        }
+        
         String portName = ReservationConstants.COMPORT;
         this.query = query;
         
@@ -79,7 +85,7 @@ public class ComPortSendReceive {
 
         portBusy = true;
         System.out.println("Acquired port now- " + query);
-        response = new StringBuffer();
+        
         // writing to port
         serialPort = new SerialPort(portName);
         try {

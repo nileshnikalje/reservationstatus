@@ -331,8 +331,15 @@
 	 <form>			  
 			  <tr>	
 			  	<td style="color:white">Class</td>
-			  	<td><select ng-model="selectedJourneyClass" ng-options="x for x in journeyClasses"></select></td>
-
+ 			  	<td><select ng-model="selectedJourneyClass" ng-options="x for x in journeyClasses"></select></td>
+<!--				<td>
+ 				    <li ng-repeat="x in journeyClasses">
+    					<label>{{x}}</label>
+    					<input type="checkbox" ng-model="newObject[x]">
+   					</li>
+   					<pre>{{newObject | json}}</pre> 
+   					
+   				</td> --> 
  	    	  </tr>
 			  <tr>	
 			  	<td style="color:white">Screen</td>
